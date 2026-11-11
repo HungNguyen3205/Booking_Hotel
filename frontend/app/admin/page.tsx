@@ -97,6 +97,17 @@ export default function Admin() {
     finally { setBusy(false); }
   }
 
+  async function quickLogin(email: string) {
+    setBusy(true);
+    setError('');
+    try {
+      const {csrf} = session ?? await api<Session>('/session');
+      setSession(await api<Session>('/login', 'POST', { email, password: 'demo-password' }, csrf));
+      setLoading(true);
+    } catch (reason) { setError(errorText(reason)); }
+    finally { setBusy(false); }
+  }
+
   async function logout() {
     setBusy(true);
     setError('');
@@ -146,10 +157,18 @@ export default function Admin() {
     <div className="login-content"><form className="stack login-form" onSubmit={authenticate}>
       <a className="back-link" href="/"><ArrowLeft size={17}/> Về trang khách sạn</a>
       <p className="eyebrow">GLG HOTEL</p><h1>Đăng nhập quản trị</h1>
-      <label>Email<input name="email" type="email" autoComplete="username" required/></label>
-      <label>Mật khẩu<input name="password" type="password" autoComplete="current-password" required/></label>
+      <label>Email<input name="email" type="email" autoComplete="username" defaultValue="admin@example.test" required/></label>
+      <label>Mật khẩu<input name="password" type="password" autoComplete="current-password" defaultValue="Admin@12345678" required/></label>
       {error && <p className="notice error" role="alert">{error}</p>}
       <button className="button primary" disabled={busy || loading}>{busy || loading ? 'Đang tải…' : 'Đăng nhập'}</button>
+
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '12px', marginTop: '12px' }}>
+        <p style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: 600, color: '#334155' }}>⚡ Đăng nhập nhanh để test giao diện:</p>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button type="button" className="button outline" style={{ fontSize: '12px', padding: '6px 10px', flex: 1 }} disabled={busy} onClick={() => quickLogin('admin@example.test')}>Tài khoản Admin</button>
+          <button type="button" className="button outline" style={{ fontSize: '12px', padding: '6px 10px', flex: 1 }} disabled={busy} onClick={() => quickLogin('letan@glghotel.vn')}>Tài khoản Lễ tân</button>
+        </div>
+      </div>
     </form></div>
   </main>;
 

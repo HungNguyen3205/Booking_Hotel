@@ -1,3 +1,5 @@
+import { handleMockRequest } from './mock-data';
+
 export type Room = {
   id: number; number?: string; name: string; description: string; image: string | null;
   price: number; capacity: number; area: number; bed: string; active?: boolean;
@@ -22,18 +24,51 @@ export function hotelDate(offset = 0) {
 export function dateLabel(date: string) {
   return date.split('-').reverse().join('/');
 }
+
 export async function api<T>(path: string, method = 'GET', body?: unknown, csrf?: string): Promise<T> {
-  const response = await fetch('/api' + path, {
-    method, cache: 'no-store',
-    headers: { Accept: 'application/json', ...(body !== undefined && {'Content-Type': 'application/json'}), ...(csrf && {'X-CSRF-TOKEN': csrf}) },
-    ...(body !== undefined && { body: JSON.stringify(body) }),
-  });
-  if (response.status === 204) return undefined as T;
-  const payload = await response.json().catch(() => null);
-  if (!response.ok) {
-    const fields = Object.values(payload?.errors ?? {}).flat();
-    const message = {401: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 419: 'Phiên làm việc đã hết hạn. Vui lòng tải lại trang.', 429: 'Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau.'}[response.status as 401 | 419 | 429];
-    throw new Error(message || fields[0] as string || payload?.message || 'Không thể kết nối với hệ thống.');
+  try {
+    const response = await fetch('/api' + path, {
+      method,
+      cache: 'no-store',
+      headers: {
+        Accept: 'application/json',
+        ...(body !== undefined && { 'Content-Type': 'application/json' }),
+        ...(csrf && { 'X-CSRF-TOKEN': csrf }),
+      },
+      ...(body !== undefined && { body: JSON.stringify(body) }),
+    });
+
+    if (response.ok) {
+      if (response.status === 204) return undefined as T;
+      return await response.json();
+    }
+
+    // Nếu backend đang online nhưng trả mã lỗi 4xx hợp lệ (trừ 404)
+    if (response.status >= 400 && response.status < 500 && response.status !== 404) {
+      const payload = await response.json().catch(() => null);
+      if (payload && (payload.errors || payload.message)) {
+        const fields = Object.values(payload?.errors ?? {}).flat();
+        const message =
+          {
+            401: 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+            419: 'Phiên làm việc đã hết hạn. Vui lòng tải lại trang.',
+            429: 'Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau.',
+          }[response.status as 401 | 419 | 429];
+        throw new Error(message || (fields[0] as string) || payload?.message || 'Có lỗi xảy ra.');
+      }
+    }
+  } catch (error: any) {
+    // Nếu là lỗi nghiệp vụ do throw ở trên, rethrow
+    if (
+      error instanceof Error &&
+      !error.message.includes('fetch') &&
+      !error.message.includes('Failed') &&
+      !error.message.includes('NetworkError')
+    ) {
+      throw error;
+    }
   }
-  return payload as T;
+
+  // Tự động chuyển sang Mock Data khi Backend chưa online hoặc deploy độc lập
+  return handleMockRequest<T>(path, method, body);
 }

@@ -7,12 +7,6 @@ import { api, Booking, dateLabel, errorText, hotelDate, money, Room, Session, st
 type Stay = {check_in: string; check_out: string; guests: number};
 const stayDays = (stay: Stay) => (Date.parse(stay.check_out) - Date.parse(stay.check_in)) / 86400000;
 
-const DEFAULT_ROOMS: Room[] = [
-  { id: 1, name: 'Deluxe King', description: 'Tông gỗ ấm, giường king và cửa sổ hướng phố dành cho kỳ nghỉ nhẹ nhàng.', image: '/images/deluxe.webp', price: 1450000, capacity: 2, area: 32, bed: '1 giường King' },
-  { id: 2, name: 'River View Twin', description: 'Hai giường đơn và khung cửa lớn mở ra tầm nhìn sông Hàn.', image: '/images/twin.webp', price: 1890000, capacity: 2, area: 38, bed: '2 giường đơn' },
-  { id: 3, name: 'GLG Suite', description: 'Phòng khách riêng, góc nhìn toàn cảnh và không gian rộng cho cả gia đình.', image: '/images/suite.webp', price: 2950000, capacity: 4, area: 62, bed: '1 King + sofa bed' },
-];
-
 function Confirmation({booking}: {booking: Booking}) {
   return <div className="confirmation">
     <CheckCircle2 size={32}/><p className="eyebrow">Mã đặt phòng</p><h2>{booking.code}</h2>
@@ -41,7 +35,7 @@ export default function Home() {
     setStay({check_in: hotelDate(), check_out: hotelDate(1), guests: 2});
     api<Room[]>('/rooms')
       .then(setRooms)
-      .catch(() => setRooms(DEFAULT_ROOMS))
+      .catch(error => setSearchError(errorText(error)))
       .finally(() => setSearching(false));
   }, []);
 
@@ -59,10 +53,9 @@ export default function Home() {
     try {
       setRooms(await api<Room[]>('/rooms?' + new URLSearchParams({...stay, guests: String(stay.guests)})));
       setSearched(stay);
-    } catch {
-      const filtered = DEFAULT_ROOMS.filter(r => r.capacity >= stay.guests);
-      setRooms(filtered.length ? filtered : DEFAULT_ROOMS);
-      setSearched(stay);
+    } catch (error) {
+      setRooms([]);
+      setSearchError(errorText(error));
     } finally { setSearching(false); }
   }
 
@@ -86,23 +79,10 @@ export default function Home() {
         : await api<Booking>('/bookings', 'POST', {...values, ...searched, room_id: room?.id, quoted_rate: room?.price, request_key: requestKey}, csrf);
       setBooking(response);
     } catch (error) {
-      if (mode === 'booking' && room && searched) {
-        const mockCode = 'GLG-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-        setBooking({
-          code: mockCode,
-          room_name: room.name,
-          check_in: searched.check_in,
-          check_out: searched.check_out,
-          guests: searched.guests,
-          total: stayDays(searched) * room.price,
-          status: 'pending',
-          paid_at: null,
-        });
-      } else {
-        setDialogError(errorText(error));
-      }
+      setDialogError(errorText(error));
+    } finally {
+      setSubmitting(false);
     }
-    finally { setSubmitting(false); }
   }
 
   return <>
