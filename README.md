@@ -1,6 +1,6 @@
-# Han River Hotel
+# GLG Hotel
 
-Website đặt phòng khách sạn tiếng Việt và khu vực vận hành tại `/admin`. Phong cách tham khảo [Courtyard by Marriott Danang Han River](https://www.marriott.com/en-us/hotels/dadcy-courtyard-danang-han-river/overview/). Han River Hotel là thương hiệu mẫu. Ảnh minh họa trong `frontend/public/images` được tạo cho dự án.
+Website đặt phòng khách sạn tiếng Việt và khu vực vận hành tại `/admin`. GLG Hotel là thương hiệu mẫu. Ảnh minh họa trong `frontend/public/images` được tạo cho dự án.
 
 ## Chạy trên máy
 

@@ -38,7 +38,7 @@ class BookingService
             $departure = CarbonImmutable::parse($data['check_out']);
             unset($data['quoted_rate']);
             $booking = Booking::create($data + [
-                'code' => 'HR-'.strtoupper(Str::random(12)),
+                'code' => 'GLG-'.strtoupper(Str::random(12)),
                 'request_hash' => $hash,
                 'nightly_rate' => $room->price,
                 'total' => (int) $arrival->diffInDays($departure) * $room->price,

@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         foreach ([
             ['301', 'Deluxe King', 'Tông gỗ ấm, giường king và cửa sổ hướng phố dành cho kỳ nghỉ nhẹ nhàng.', '/images/deluxe.webp', 1450000, 2, 32, '1 giường King'],
             ['502', 'River View Twin', 'Hai giường đơn và khung cửa lớn mở ra tầm nhìn sông Hàn.', '/images/twin.webp', 1890000, 2, 38, '2 giường đơn'],
-            ['801', 'Han River Suite', 'Phòng khách riêng, góc nhìn toàn cảnh và không gian rộng cho cả gia đình.', '/images/suite.webp', 2950000, 4, 62, '1 King + sofa bed'],
+            ['801', 'GLG Suite', 'Phòng khách riêng, góc nhìn toàn cảnh và không gian rộng cho cả gia đình.', '/images/suite.webp', 2950000, 4, 62, '1 King + sofa bed'],
         ] as [$number, $name, $description, $image, $price, $capacity, $area, $bed]) {
             Room::withTrashed()->firstOrCreate(compact('number'), compact('name', 'description', 'image', 'price', 'capacity', 'area', 'bed'));
         }

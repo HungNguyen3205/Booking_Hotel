@@ -81,7 +81,7 @@ export default function Home() {
 
   return <>
     <header className="site-header">
-      <a className="brand" href="/" aria-label="Han River Hotel, trang chủ"><span className="brand-icon"><Waves size={23}/></span><span>HAN RIVER<small>HOTEL · ĐÀ NẴNG</small></span></a>
+      <a className="brand" href="/" aria-label="GLG Hotel, trang chủ"><span className="brand-icon"><Waves size={23}/></span><span>GLG HOTEL<small>ĐÀ NẴNG</small></span></a>
       <nav aria-label="Điều hướng chính"><a href="#rooms">Phòng nghỉ</a><a href="#hotel">Khách sạn</a><button className="link" onClick={() => open('lookup')}>Tra cứu đặt phòng</button></nav>
       <a className="button primary header-cta" href="#booking">Đặt phòng <ArrowRight size={16}/></a>
     </header>
@@ -128,7 +128,7 @@ export default function Home() {
       </section>
     </main>
 
-    <footer className="site-footer"><div className="container"><span><strong>HAN RIVER HOTEL</strong><small>Đà Nẵng, Việt Nam</small></span><div><button className="link" onClick={() => open('lookup')}>Tra cứu đặt phòng</button><a href="/admin">Quản trị</a></div></div></footer>
+    <footer className="site-footer"><div className="container"><span><strong>GLG HOTEL</strong><small>Đà Nẵng, Việt Nam</small></span><div><button className="link" onClick={() => open('lookup')}>Tra cứu đặt phòng</button><a href="/admin">Quản trị</a></div></div></footer>
 
     <dialog ref={dialog} onClose={() => setMode(null)} onCancel={event => { if (submitting) event.preventDefault(); }} className="hotel-dialog">
       <button className="icon close" aria-label="Đóng" disabled={submitting} onClick={() => setMode(null)}><X size={21}/></button>
@@ -136,7 +136,7 @@ export default function Home() {
         <p className="eyebrow">{mode === 'lookup' ? 'KỲ NGHỈ CỦA BẠN' : 'ĐẶT PHÒNG'}</p>
         <h2>{mode === 'lookup' ? 'Tra cứu đặt phòng' : room?.name}</h2>
         {mode === 'booking' && searched && room && <p className="notice">{dateLabel(searched.check_in)} – {dateLabel(searched.check_out)} · {stayDays(searched)} đêm · <strong>{money(stayDays(searched) * room.price)}</strong><br/>Thanh toán tại khách sạn.</p>}
-        {mode === 'lookup' ? <label>Mã đặt phòng<input name="code" required maxLength={32} placeholder="HR-…"/></label> : <label>Họ và tên<input name="guest_name" autoComplete="name" required maxLength={120}/></label>}
+        {mode === 'lookup' ? <label>Mã đặt phòng<input name="code" required maxLength={32} placeholder="GLG-…"/></label> : <label>Họ và tên<input name="guest_name" autoComplete="name" required maxLength={120}/></label>}
         <label>Email<input name="email" autoComplete="email" type="email" required maxLength={200}/></label>
         {mode === 'booking' && <label>Số điện thoại<input name="phone" autoComplete="tel" type="tel" required maxLength={25}/></label>}
         {dialogError && <p className="notice error" role="alert">{dialogError}</p>}

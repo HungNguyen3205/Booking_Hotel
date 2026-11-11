@@ -142,10 +142,10 @@ export default function Admin() {
   }
 
   if (!user) return <main className="login">
-    <div className="login-photo"><a className="brand" href="/"><span className="brand-icon"><Waves size={23}/></span><span>HAN RIVER<small>HOTEL · ĐÀ NẴNG</small></span></a></div>
+    <div className="login-photo"><a className="brand" href="/"><span className="brand-icon"><Waves size={23}/></span><span>GLG HOTEL<small>ĐÀ NẴNG</small></span></a></div>
     <div className="login-content"><form className="stack login-form" onSubmit={authenticate}>
       <a className="back-link" href="/"><ArrowLeft size={17}/> Về trang khách sạn</a>
-      <p className="eyebrow">HAN RIVER HOTEL</p><h1>Đăng nhập quản trị</h1>
+      <p className="eyebrow">GLG HOTEL</p><h1>Đăng nhập quản trị</h1>
       <label>Email<input name="email" type="email" autoComplete="username" required/></label>
       <label>Mật khẩu<input name="password" type="password" autoComplete="current-password" required/></label>
       {error && <p className="notice error" role="alert">{error}</p>}
@@ -157,7 +157,7 @@ export default function Admin() {
   const employee = editor?.kind === 'staff' ? editor.item : undefined;
   return <div className="admin-shell">
     <aside className="sidebar">
-      <a className="brand" href="/"><span className="brand-icon"><Waves size={23}/></span><span>HAN RIVER<small>VẬN HÀNH KHÁCH SẠN</small></span></a>
+      <a className="brand" href="/"><span className="brand-icon"><Waves size={23}/></span><span>GLG HOTEL<small>VẬN HÀNH KHÁCH SẠN</small></span></a>
       <nav aria-label="Quản trị khách sạn">{tabs.filter(item => item.id !== 'staff' || user.role === 'admin').map(item =>
         <button key={item.id} disabled={busy} aria-current={tab === item.id ? 'page' : undefined} onClick={() => navigate(item.id)}><item.icon size={18}/>{item.label}</button>
       )}</nav>

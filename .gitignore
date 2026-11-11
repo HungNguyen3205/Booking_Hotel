@@ -7,3 +7,5 @@ next-env.d.ts
 vendor/
 *.sqlite
 *.sqlite-*
+.vercel
+AGENTS.md
