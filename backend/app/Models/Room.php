@@ -1,13 +1,13 @@
 <?php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-class Room extends Model
+class Room extends Base
 {
-    use SoftDeletes;
+    public const HOUSEKEEPING = ['dirty', 'cleaning', 'inspecting', 'clean'];
+    protected $casts = ['archived_at' => 'datetime'];
 
-    protected $fillable = ['number', 'name', 'description', 'image', 'price', 'capacity', 'area', 'bed', 'active'];
-    protected $casts = ['active' => 'boolean'];
+    public function type() { return $this->belongsTo(RoomType::class, 'room_type_id'); }
+    public function floor() { return $this->belongsTo(Floor::class); }
+    public function blocks() { return $this->hasMany(RoomBlock::class); }
+    public function scopeSellable($q) { return $q->whereNull('archived_at'); }
 }

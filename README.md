@@ -1,31 +1,45 @@
-# GLG Hotel
+# GLG HOTEL & SPA — Hệ thống quản lý khách sạn
 
-Website đặt phòng khách sạn tiếng Việt và khu vực vận hành tại `/admin`. GLG Hotel là thương hiệu mẫu. Ảnh minh họa trong `frontend/public/images` được tạo cho dự án.
+Website đặt phòng công khai, trang quản trị vận hành và backend dùng chung một nguồn tồn phòng, bảng giá và hồ sơ thanh toán.
+Luồng vận hành: **đặt phòng → thu cọc → nhận phòng → dịch vụ → trả phòng → quyết toán → dọn phòng → mở bán tiếp.**
 
-## Chạy trên máy
+| Thành phần | Công nghệ | Thư mục |
+| --- | --- | --- |
+| Backend API, nghiệp vụ, phân quyền | Laravel 12 (PHP ≥ 8.2) | `backend/` |
+| Cơ sở dữ liệu | SQLite (máy đơn/thử nghiệm) hoặc MySQL 8 / MariaDB 10.6+ (vận hành) | `backend/database/` |
+| Website công khai + trang quản trị | Next.js 16 (App Router, React 19, TypeScript) | `frontend/` |
 
-Cần Node.js 20.9+, PHP 8.4+ với PDO SQLite, Composer 2 và npm. Dùng hai cửa sổ terminal.
+Tài liệu khác:
 
-**Terminal 1**
+- [docs/kien-truc-nghiep-vu.md](docs/kien-truc-nghiep-vu.md) — kiến trúc, cơ sở dữ liệu, mô hình trạng thái, quy tắc giá/tiền/báo cáo.
+- [docs/tich-hop.md](docs/tich-hop.md) — cấu hình QR, webhook ngân hàng, email, Zalo, hóa đơn điện tử, OTA, sao lưu.
+- [docs/ban-giao.md](docs/ban-giao.md) — kết quả kiểm thử, tính năng đã chạy / chờ tích hợp, giới hạn, thông tin cần khách sạn bổ sung.
+
+## 1. Chạy trên máy
+
+Yêu cầu: PHP 8.2+ (pdo_sqlite hoặc pdo_mysql, mbstring, openssl, fileinfo), Composer 2, Node.js 20.9+, npm.
+
+**Backend** (cửa sổ 1)
 
 ```bash
 cd backend
 composer install
-cp .env.example .env
+cp .env.example .env            # PowerShell: Copy-Item .env.example .env
 php artisan key:generate
 ```
 
-Mở `backend/.env` và điền `HOTEL_ADMIN_EMAIL` cùng `HOTEL_ADMIN_PASSWORD` từ 12 ký tự. Sau đó chạy:
+Mở `backend/.env`, đặt tối thiểu:
+
+- `HOTEL_ADMIN_EMAIL`, `HOTEL_ADMIN_PASSWORD` (≥ 12 ký tự) — tài khoản **Chủ khách sạn**.
+- `HOTEL_DEMO_PASSWORD` (≥ 10 ký tự) — mật khẩu chung cho các tài khoản thử theo vai trò (chỉ khi `HOTEL_SEED_DEMO=true`).
 
 ```bash
-touch database/database.sqlite
+touch database/database.sqlite   # PowerShell: New-Item database/database.sqlite -ItemType File
 php artisan migrate --seed
 php artisan serve --host=127.0.0.1 --port=8000
 ```
 
-Trên PowerShell, thay `cp .env.example .env` bằng `Copy-Item .env.example .env` và `touch` bằng `New-Item database/database.sqlite -ItemType File` nếu cơ sở dữ liệu chưa tồn tại.
-
-**Terminal 2**
+**Frontend** (cửa sổ 2)
 
 ```bash
 cd frontend
@@ -33,31 +47,53 @@ npm ci
 npm run dev
 ```
 
-- [Đặt phòng](http://localhost:3000)
-- [Đăng nhập quản trị](http://localhost:3000/admin) bằng thông tin trong `.env`.
-- `npm run build` kiểm tra bản dựng Next.js. `HOTEL_API_URL` là địa chỉ nội bộ của Laravel, mặc định `http://127.0.0.1:8000`. Đặt biến này khi build nếu backend dùng địa chỉ khác.
+- Website: <http://localhost:3000>
+- Quản trị: <http://localhost:3000/admin> (đăng nhập bằng tài khoản ở trên)
 
-## Nghiệp vụ
+Next.js chuyển tiếp `/api/*` sang Laravel (biến `HOTEL_API_URL`, mặc định `http://127.0.0.1:8000`), nên cookie phiên và CSRF luôn cùng origin.
 
-| Vai trò | Chức năng |
-| --- | --- |
-| Khách | Xem phòng, lọc theo ngày và số khách, xem tổng tiền, gửi yêu cầu, tra cứu bằng mã và email |
-| Lễ tân | Xem tổng quan và danh sách phòng, tìm và lọc đơn, xác nhận, hủy đơn chưa thu tiền, nhận phòng, ghi nhận tiền tại quầy, trả phòng |
-| Quản trị viên | Toàn bộ chức năng lễ tân, thêm/sửa/xóa phòng, mở/ngừng bán, thêm/sửa/xóa tài khoản lễ tân |
+### Tài khoản thử (khi `HOTEL_SEED_DEMO=true`)
 
-- Một đơn tương ứng một phòng vật lý và từ 1 đến 30 đêm. Đêm trả phòng thuộc kỳ đặt tiếp theo. Giá được lưu tại thời điểm khách gửi đơn.
-- Đơn chờ xác nhận giữ phòng. Lễ tân xử lý đơn chờ trên trang quản trị. Hủy đơn giải phóng các đêm đã giữ. Trả phòng yêu cầu đã thu tiền.
-- Cơ sở dữ liệu khóa mỗi cặp phòng và đêm. Việc tạo đơn và giữ phòng diễn ra trong cùng transaction. Gửi lại cùng yêu cầu trả về mã đã tạo.
-- Phòng có đơn đang hoạt động cần được xử lý trước khi xóa. Phòng đã xóa vẫn có trong lịch sử đặt phòng.
-- Bản này dùng thanh toán tại quầy và hiển thị mã đặt phòng trên web. Luồng hoàn tiền, email tự động và cổng thanh toán online nằm ngoài phạm vi bản này.
-
-## Kiến trúc
-
-| Tầng | Mã nguồn | Trách nhiệm |
+| Vai trò | Email | Mật khẩu |
 | --- | --- | --- |
-| Entity | `backend/app/Models`, `backend/database/migrations` | Phòng, tài khoản, đơn, khóa lịch theo đêm |
-| View | `frontend/app` | Trang đặt phòng, tra cứu, đăng nhập và vận hành |
-| Controller | `backend/app/Http/Controllers`, `backend/routes/web.php` | API, xác thực, phân quyền và kiểm tra đầu vào |
-| Service | `backend/app/Services/BookingService.php` | Tính giá, giữ lịch, chuyển trạng thái và ghi nhận thanh toán |
+| Chủ khách sạn | `HOTEL_ADMIN_EMAIL` | `HOTEL_ADMIN_PASSWORD` |
+| Quản lý | `quanly@demo.glg.test` | `HOTEL_DEMO_PASSWORD` |
+| Lễ tân | `letan@demo.glg.test` | như trên |
+| Kế toán | `ketoan@demo.glg.test` | như trên |
+| Buồng phòng | `buongphong@demo.glg.test` | như trên |
+| Kỹ thuật | `kythuat@demo.glg.test` | như trên |
 
-Next.js chuyển tiếp `/api/*` sang Laravel cùng origin với frontend. Laravel lưu session trong SQLite và kiểm tra CSRF đối với các yêu cầu ghi. Khi vận hành qua HTTPS, đặt `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL` theo tên miền thực và `SESSION_SECURE_COOKIE=true`. Dùng volume bền vững cho SQLite và sao lưu cơ sở dữ liệu định kỳ.
+Dữ liệu demo (khách, đặt phòng, dịch vụ và đơn giá dịch vụ, tồn kho, bài viết nháp) là **giả định để thử nghiệm**, có hậu tố "(demo)". Seed lại từ đầu: `php artisan migrate:fresh --seed`.
+
+## 2. Kiểm thử
+
+```bash
+cd backend && vendor/bin/phpunit          # 22 kịch bản nghiệp vụ, SQLite in-memory
+bash tests/Concurrency/run.sh 8           # tranh chấp thật: 8 tiến trình đặt cùng loại phòng cùng lúc (CSDL dev)
+cd ../frontend && npx tsc --noEmit && npm run build
+```
+
+Kết quả lần chạy gần nhất ở [docs/ban-giao.md](docs/ban-giao.md).
+
+## 3. Lệnh định kỳ
+
+Windows (máy chủ đơn): chạy thường trực `php artisan schedule:work`. Cron (Linux) mỗi phút:
+
+```cron
+* * * * * cd /duong-dan/backend && php artisan schedule:run >> /dev/null 2>&1
+```
+
+| Lệnh | Lịch | Việc |
+| --- | --- | --- |
+| `php artisan hotel:daily` | 00:10 hằng ngày | Tự động hóa cuối ngày: đánh dấu không đến, tạo việc dọn phòng đang ở, giao việc dọn. Cũng tự chạy khi có người mở "Việc hôm nay" hoặc sơ đồ phòng lần đầu trong ngày, nên vẫn hoạt động khi chưa cài cron. Bật/tắt từng việc ở Cấu hình → Tự động hóa. |
+| `php artisan hotel:release-holds` | 5 phút/lần | Hủy giữ chỗ quá hạn, giải phóng tồn. (Hệ thống cũng tự chạy trước mỗi lần tra tồn/tạo đặt phòng, nên không phụ thuộc cron.) |
+| `php artisan hotel:backup` | 02:30 hằng ngày | Sao lưu SQLite bằng `VACUUM INTO` vào `storage/app/private/backups`, giữ 14 bản. |
+
+## 4. Triển khai
+
+1. **Backend**: PHP-FPM + Nginx trỏ `backend/public`. `.env`: `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://ten-mien`, `SESSION_SECURE_COOKIE=true`. Khuyến nghị MySQL/MariaDB cho nhiều người dùng đồng thời (đặt `DB_CONNECTION=mysql` và thông tin DB). Chạy `composer install --no-dev --optimize-autoloader`, `php artisan migrate --force`, `php artisan db:seed --force` (lần đầu; đặt `HOTEL_SEED_DEMO=false`), `php artisan config:cache route:cache`. Thư mục `storage/` và (nếu dùng) file SQLite phải ghi được và nằm trên ổ bền vững.
+2. **Frontend**: `npm ci && npm run build && npm run start` (hoặc PM2/systemd). Biến môi trường khi build và chạy: `HOTEL_API_URL` (địa chỉ nội bộ của Laravel), `NEXT_PUBLIC_SITE_URL` (tên miền công khai, dùng cho canonical/sitemap).
+3. Reverse proxy: tên miền chính → Next.js (cổng 3000). Next.js tự chuyển `/api/*` sang Laravel; không cần mở Laravel ra Internet trừ khi muốn nhận webhook trực tiếp.
+4. Cron `schedule:run` như mục 3. Sao lưu: với SQLite dùng `hotel:backup`; với MySQL dùng `mysqldump --single-transaction --routines glg_hotel > backup.sql` theo lịch và lưu ra ngoài máy chủ.
+
+**Phục hồi**: dừng ứng dụng → SQLite: chép bản `storage/app/private/backups/glg-*.sqlite` đè lên `database/database.sqlite`; MySQL: `mysql glg_hotel < backup.sql` → chạy `php artisan migrate --force` → khởi động lại. Không có nút phục hồi trên giao diện để tránh ghi đè nhầm dữ liệu đang vận hành.
