@@ -140,15 +140,15 @@ export function BookingFlow() {
 
       {step !== 'done' && (
         <form className="search-bar wide" onSubmit={submitSearch} aria-label="Ngày lưu trú và số khách" style={{ marginBottom: 24 }}>
-          <label className="field"><span>Nhận phòng</span><input className="input" type="date" required min={todayISO()} value={query.check_in}
+          <label className="field"><span>Nhận phòng</span><input className="input" type="date" name="check_in" required min={todayISO()} value={query.check_in}
             onChange={e => setQuery(q => ({ ...q, check_in: e.target.value, check_out: q.check_out <= e.target.value ? addDays(e.target.value, 1) : q.check_out }))} /></label>
-          <label className="field"><span>Trả phòng</span><input className="input" type="date" required min={query.check_in ? addDays(query.check_in, 1) : todayISO()} value={query.check_out}
+          <label className="field"><span>Trả phòng</span><input className="input" type="date" name="check_out" required min={query.check_in ? addDays(query.check_in, 1) : todayISO()} value={query.check_out}
             onChange={e => setQuery(q => ({ ...q, check_out: e.target.value }))} /></label>
-          <label className="field"><span>Người lớn</span><select className="select" value={query.adults} onChange={e => setQuery(q => ({ ...q, adults: Number(e.target.value) }))}>
+          <label className="field"><span>Người lớn</span><select className="select" name="adults" value={query.adults} onChange={e => setQuery(q => ({ ...q, adults: Number(e.target.value) }))}>
             {Array.from({ length: 12 }, (_, i) => i + 1).map(n => <option key={n}>{n}</option>)}</select></label>
-          <label className="field"><span>Trẻ em</span><select className="select" value={query.children} onChange={e => setQuery(q => ({ ...q, children: Number(e.target.value) }))}>
+          <label className="field"><span>Trẻ em</span><select className="select" name="children" value={query.children} onChange={e => setQuery(q => ({ ...q, children: Number(e.target.value) }))}>
             {Array.from({ length: 9 }, (_, i) => i).map(n => <option key={n}>{n}</option>)}</select></label>
-          <label className="field"><span>Số phòng</span><select className="select" value={query.rooms} onChange={e => setQuery(q => ({ ...q, rooms: Number(e.target.value) }))}>
+          <label className="field"><span>Số phòng</span><select className="select" name="rooms" value={query.rooms} onChange={e => setQuery(q => ({ ...q, rooms: Number(e.target.value) }))}>
             {Array.from({ length: 6 }, (_, i) => i + 1).map(n => <option key={n}>{n}</option>)}</select></label>
           <button className="btn btn-primary" disabled={searching}><Search size={16} aria-hidden /> {searching ? 'Đang tìm…' : 'Tìm phòng'}</button>
         </form>

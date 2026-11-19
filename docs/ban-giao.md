@@ -4,7 +4,7 @@ Ngày bàn giao: 19/11/2026. Phạm vi: Giai đoạn 1 đầy đủ, phần lớ
 
 ## 1. Kết quả kiểm thử
 
-### 1.1. Kiểm thử tự động backend — `vendor/bin/phpunit`: **23/23 đạt, 209 assertion**
+### 1.1. Kiểm thử tự động backend — `php vendor/bin/phpunit`: **27/27 đạt, 270 assertion** (bảng dưới liệt kê các tình huống mục K; các kiểm thử bổ sung được mô tả trong [nghiem-thu.md](nghiem-thu.md))
 
 | # | Tình huống (mục K) | Kiểm thử | Kết quả |
 | --- | --- | --- | --- |
@@ -92,9 +92,12 @@ Email (cần SMTP), webhook ngân hàng (cần bộ chuyển đổi theo nhà cu
 - Quy tắc giá chỉ tắt được, chưa có thao tác xóa.
 - SQLite phù hợp một máy chủ, lượng ghi vừa phải; vận hành nhiều quầy nên dùng MySQL/MariaDB.
 - Webhook ngân hàng nhận định dạng chuẩn hóa nội bộ; cần viết bộ chuyển đổi khi chọn nhà cung cấp.
-- Chưa thử giao diện trên trình duyệt thật và thiết bị di động thật (mục 1.4).
+- Chưa thử giao diện trên thiết bị di động thật: checklist ở [nghiem-thu.md](nghiem-thu.md), **chưa kiểm thử, không tính là đạt**.
+- Giới hạn tần suất API công khai tính theo IP khách. Website gọi API qua proxy Next.js, nên reverse proxy đứng trước Next.js **phải** ghi IP thật vào `X-Forwarded-For`. Backend chỉ tin header này từ `TRUSTED_PROXIES` (mặc định `127.0.0.1,::1`). Nếu thiếu, mọi khách dùng chung một hạn mức (10 lượt đặt phòng mỗi phút).
 
 ## 4. Thông tin cần khách sạn bổ sung
+
+Danh sách ảnh theo từng vị trí trên website (kèm tỷ lệ, kích thước) và nội dung chữ: [nghiem-thu.md, mục 4](nghiem-thu.md#4-ảnh-và-nội-dung-khách-sạn-cần-cung-cấp).
 
 | Thông tin | Đang dùng | Nơi chỉnh |
 | --- | --- | --- |

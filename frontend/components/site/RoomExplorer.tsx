@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ArrowRight, BedDouble, Maximize, Users } from 'lucide-react';
 import type { RoomType } from '@/lib/site-api';
 import { money } from '@/lib/format';
@@ -13,6 +13,8 @@ import { RoomPlate } from './RoomPlate';
  */
 export function RoomExplorer({ rooms }: { rooms: RoomType[] }) {
   const [active, setActive] = useState(0);
+  // Phân biệt thao tác: chuột (rê để xem, bấm để mở), chạm (chạm lần đầu để xem, lần nữa để mở), bàn phím (focus để xem, Enter để mở)
+  const down = useRef<{ i: number; wasActive: boolean; type: string } | null>(null);
   const t = rooms[active];
   return (
     <div className="explorer">
@@ -21,8 +23,14 @@ export function RoomExplorer({ rooms }: { rooms: RoomType[] }) {
           <li key={r.id}>
             <Link href={`/phong/${r.slug}`} aria-current={i === active ? 'true' : undefined}
               className={`explorer-item ${i === active ? 'on' : ''}`}
-              onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)}
-              onClick={e => { if (i !== active) { e.preventDefault(); setActive(i); } }}>
+              onPointerDown={e => { down.current = { i, wasActive: i === active, type: e.pointerType }; }}
+              onMouseEnter={() => setActive(i)}
+              onFocus={() => { if (!down.current) setActive(i); }}
+              onClick={e => {
+                const d = down.current;
+                down.current = null;
+                if (d && d.i === i && d.type !== 'mouse' && !d.wasActive) { e.preventDefault(); setActive(i); }
+              }}>
               <span className="explorer-no">0{i + 1}</span>
               <span className="explorer-name">{r.name}</span>
               <span className="explorer-meta">{r.area} m² · từ {money(r.base_rate)}</span>

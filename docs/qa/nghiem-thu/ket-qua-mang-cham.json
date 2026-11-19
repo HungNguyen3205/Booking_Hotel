@@ -1,0 +1,41 @@
+{
+  "code": "0966555133",
+  "posts": 1,
+  "res": [
+    {
+      "n": "Tìm phòng trên mạng chậm có trạng thái đang tải và ra kết quả",
+      "ok": true,
+      "d": "1217 ms, thấy \"Đang tìm…\": true"
+    },
+    {
+      "n": "Quay lại trang chủ vẫn giữ ngày đã chọn",
+      "ok": true,
+      "d": "2026-11-25"
+    },
+    {
+      "n": "Tiến lại trang đặt phòng: tự hiển thị lại kết quả đúng ngày",
+      "ok": true,
+      "d": "2026-11-25"
+    },
+    {
+      "n": "Mất mạng khi gửi: báo lỗi rõ, không báo thành công",
+      "ok": true,
+      "d": "Không kết nối được. Vui lòng kiểm tra mạng và thử lại. Bạn có thể bấm \"Đặt phòng\" lại — hệ thống sẽ không tạo "
+    },
+    {
+      "n": "Gửi lại sau lỗi + bấm đúp: cùng một request_key, ra 1 mã",
+      "ok": true,
+      "d": "POST=1 khóa khác nhau=1 mã=0966555133"
+    },
+    {
+      "n": "Mã đặt phòng là đúng số điện thoại vừa nhập",
+      "ok": true,
+      "d": "nhập 0966555133 → mã 0966555133"
+    },
+    {
+      "n": "Quay lại sau khi đặt: không gửi lại yêu cầu",
+      "ok": true,
+      "d": "POST sau khi quay lại=0"
+    }
+  ]
+}

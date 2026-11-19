@@ -8,6 +8,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <div className="site">
       <a href="#noi-dung" className="sr-only">Bỏ qua đến nội dung chính</a>
+      {process.env.NEXT_PUBLIC_PREVIEW === '1' && (
+        <div className="preview-ribbon" role="note">Bản xem trước để nghiệm thu — dữ liệu thử, không nhận đặt phòng thật</div>
+      )}
       <Header />
       <main id="noi-dung">{children}</main>
       <Footer site={site} />

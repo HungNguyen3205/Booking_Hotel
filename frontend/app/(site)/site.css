@@ -405,3 +405,18 @@ html:has(.site) { scroll-padding-top: calc(var(--header-h, 72px) + 16px); }
 .explorer-no { color: var(--gold-soft); }
 .explorer-meta { color: #c9d4cd; }
 .chapter-head .link-arrow, .chapter-head .link-light { padding-block: 10px 4px; }
+
+/* Hiệu năng: chỉ dùng 4 kiểu font trên website (Be Vietnam 400/600, Cormorant 600 + 500 nghiêng) — giảm từ 14 xuống 8 tệp tải.
+   Đo thực tế: font tranh băng thông với ảnh hero (LCP). */
+.site strong, .site b, .site th, .site .summary-card .total, .site .card-head h2, .site .card-head h3, .site .table th { font-weight: 600; }
+.site .plate-area, .site .pause-quote, .site .footer-mark { font-weight: 600; }
+.site h1, .site h2, .site h3 { font-weight: 600; }
+.site .chapter-no span, .site h1 em, .site h2 em { font-weight: 500; font-style: italic; }
+
+/* Dải nhận biết môi trường preview (chỉ hiện khi NEXT_PUBLIC_PREVIEW=1) */
+.preview-ribbon { position: relative; z-index: 60; padding: 6px 16px; text-align: center; font-size: 12.5px; font-weight: 600; background: #7a5e33; color: #fff; }
+/* Sau kiểm thử video: menu không làm mờ chữ; slide loại phòng chưa chọn ẩn hẳn sau khi chuyển cảnh */
+.site-nav a { opacity: 1; }
+.is-overlay .site-nav a { color: #f4efe6; }
+.stage-slide { visibility: hidden; transition: opacity .7s var(--ease), transform 1s var(--ease), visibility 0s linear .7s; }
+.stage-slide.on { visibility: visible; transition-delay: 0s; }

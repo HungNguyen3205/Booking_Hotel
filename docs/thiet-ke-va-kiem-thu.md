@@ -2,6 +2,8 @@
 
 Nhánh: `feature/glg-pms-art-direction` (chưa merge, chưa deploy). Ngày: 19/11/2026.
 
+> **Cập nhật đợt chuẩn bị nghiệm thu:** xem [nghiem-thu.md](nghiem-thu.md). Đợt này có môi trường xem trước tách biệt, video cuộn xuống/cuộn ngược/chuyển phòng, luồng đặt phòng trên mạng chậm, phân tích LCP (trung vị đo thật 2648 → 1696 ms), checklist thiết bị thật và danh sách ảnh/nội dung cần khách sạn cung cấp. Số liệu Lighthouse ở mục 6.4 là của **trước** đợt tối ưu này.
+
 ## 1. Môi trường và giới hạn
 
 - **Trình duyệt**: Chromium 131 qua Playwright 1.49 (chạy không giao diện) trên laptop Windows 11. Kích thước điện thoại là **viewport giả lập có cảm ứng**, không phải điện thoại thật.
@@ -114,7 +116,7 @@ Dữ liệu thô: `docs/qa/lighthouse.jsonl`. **Điểm hiệu năng dao động
 **Nội dung/ảnh thật cần khách sạn cung cấp**: ảnh từng loại phòng và nội thất; ảnh Coffee & khu đọc sách, Gym·Yoga; câu chuyện giới thiệu; số điện thoại, email, Zalo; phản hồi khách thật (website không tự tạo đánh giá); xác nhận chính sách cọc/hủy.
 
 **Kỹ thuật còn lại**
-- LCP mobile mô phỏng ~4,5 s: cân nhắc ảnh hero nhỏ hơn cho điện thoại, giảm số tệp font (đang 14 tệp latin + tiếng Việt), đo trên máy chủ thật.
+- ~~LCP mobile mô phỏng ~4,5 s~~: đã phân tích và tối ưu (AVIF, 12 → 8 tệp font); Lighthouse mô phỏng còn 3,7 s (trung vị), đo thật 1,7 s. Xem [nghiem-thu.md](nghiem-thu.md#23-lcp-đã-kiểm-chứng-trên-giả-lập-mạngcpu). Còn phải đo trên máy chủ và mạng thật.
 - Trang chi tiết phòng chưa vào được back/forward cache (Lighthouse `bf-cache`: có yêu cầu `no-store`).
-- Chưa kiểm thử: điện thoại thật, xoay ngang, mạng chậm thật, Safari/Firefox, trình đọc màn hình thật.
-- Video cuộn: `docs/qa/video-sau-desktop.webm`, `docs/qa/video-sau-dien-thoai.webm`, `docs/qa/video-truoc-desktop.webm`.
+- Chưa kiểm thử: điện thoại thật, xoay ngang, mạng chậm thật, Safari/Firefox, trình đọc màn hình thật. Checklist: [nghiem-thu.md](nghiem-thu.md#3-checklist-thử-trên-thiết-bị-thật-chưa-kiểm-thử-không-tính-là-đạt). Mạng chậm giả lập đã thử, đạt 7/7.
+- Video cuộn đợt nghiệm thu (cuộn xuống, cuộn ngược, chuyển loại phòng): `docs/qa/nghiem-thu/video-cuon-va-chuyen-phong-*.webm`. Video đợt trước: `docs/qa/video-sau-desktop.webm`, `docs/qa/video-sau-dien-thoai.webm`, `docs/qa/video-truoc-desktop.webm`.

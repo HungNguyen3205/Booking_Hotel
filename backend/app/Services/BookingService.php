@@ -71,7 +71,8 @@ class BookingService
                 $policy = $plan?->policy;
                 $booking = Booking::create([
                     'property_id' => $propertyId,
-                    'code' => self::newCode($customer->phone),
+                    // Mã theo SĐT khách nhập cho chính lần đặt này (nếu có), không theo SĐT cũ trong hồ sơ
+                    'code' => self::newCode(self::phoneCode($data['customer']['phone'] ?? null) ? $data['customer']['phone'] : $customer->phone),
                     'request_key' => $data['request_key'] ?? null,
                     'request_hash' => $data['request_hash'] ?? null,
                     'status' => $status,
@@ -183,13 +184,24 @@ class BookingService
         abort_if(empty($c['full_name']), 422, 'Cần tên khách hàng.');
         $phone = isset($c['phone']) ? preg_replace('/[^0-9+]/', '', $c['phone']) : null;
         $email = isset($c['email']) ? strtolower(trim($c['email'])) : null;
-        // Kiểm soát trùng: dùng lại hồ sơ có cùng số điện thoại hoặc email
-        $existing = Customer::whereNull('merged_into_id')->where('kind', 'guest')
-            ->where(fn ($q) => $q->when($phone, fn ($q) => $q->orWhere('phone', $phone))->when($email, fn ($q) => $q->orWhere('email', $email)))
-            ->when(!$phone && !$email, fn ($q) => $q->whereRaw('1 = 0'))
-            ->orderBy('id')->first();
-        if ($existing) {
-            return $existing;
+        // Kiểm soát trùng. Số điện thoại là định danh chính (mã đặt phòng = SĐT), nên:
+        // 1) ưu tiên hồ sơ cùng số điện thoại (so cả dạng 0xxx và +84xxx);
+        // 2) hồ sơ chỉ trùng email chỉ được dùng lại khi hồ sơ đó chưa có SĐT (bổ sung SĐT) hoặc khách không nhập SĐT.
+        //    Nếu hồ sơ đã có SĐT khác thì tạo hồ sơ mới — không được làm mất số khách vừa nhập.
+        $guests = fn () => Customer::whereNull('merged_into_id')->where('kind', 'guest');
+        if ($phone) {
+            $norm = self::phoneCode($phone);
+            $variants = array_values(array_unique(array_filter([$phone, $norm, $norm ? '+84'.substr($norm, 1) : null])));
+            if ($byPhone = $guests()->whereIn('phone', $variants)->orderBy('id')->first()) {
+                return $byPhone;
+            }
+        }
+        if ($email && ($byEmail = $guests()->where('email', $email)->orderBy('id')->first())) {
+            if (!$phone) return $byEmail;
+            if (!$byEmail->phone) {
+                $byEmail->update(['phone' => $phone]);
+                return $byEmail;
+            }
         }
         return Customer::create([
             'kind' => 'guest', 'full_name' => trim($c['full_name']), 'phone' => $phone, 'email' => $email,

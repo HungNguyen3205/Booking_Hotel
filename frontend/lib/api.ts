@@ -9,6 +9,8 @@ export class ApiError extends Error {
   }
 }
 
+const NETWORK_ERROR = 'Không kết nối được. Vui lòng kiểm tra mạng và thử lại.';
+
 let csrfToken = '';
 let propertyId = '';
 
@@ -21,7 +23,12 @@ export function setPropertyId(id: number | string) {
 
 async function ensureCsrf() {
   if (!csrfToken) {
-    const s = await fetch('/api/session', { cache: 'no-store', headers: { Accept: 'application/json' } });
+    let s: Response;
+    try {
+      s = await fetch('/api/session', { cache: 'no-store', headers: { Accept: 'application/json' } });
+    } catch {
+      throw new ApiError(NETWORK_ERROR, 0);
+    }
     if (s.ok) csrfToken = (await s.json()).csrf;
   }
 }
@@ -52,7 +59,7 @@ export async function api<T = unknown>(path: string, method = 'GET', body?: unkn
       ...(body !== undefined && { body: body instanceof FormData ? body : JSON.stringify(body) }),
     });
   } catch {
-    throw new ApiError('Không kết nối được máy chủ. Kiểm tra mạng hoặc backend.', 0);
+    throw new ApiError(NETWORK_ERROR, 0);
   }
   if (response.status === 419 && method !== 'GET') {
     csrfToken = '';
@@ -62,7 +69,9 @@ export async function api<T = unknown>(path: string, method = 'GET', body?: unkn
   if (!response.ok) {
     const fields = (payload?.errors ?? {}) as Record<string, string[]>;
     const first = Object.values(fields).flat()[0];
-    const message = first || (response.status >= 500 ? 'Máy chủ gặp lỗi. Vui lòng thử lại.' : payload?.message) || STATUS_TEXT[response.status] || 'Có lỗi xảy ra.';
+    // 419/429 do framework trả về với thông điệp tiếng Anh ("Too Many Attempts.") — luôn dùng câu tiếng Việt
+    const fixed = response.status === 419 || response.status === 429 ? STATUS_TEXT[response.status] : null;
+    const message = fixed || first || (response.status >= 500 ? 'Máy chủ gặp lỗi. Vui lòng thử lại.' : payload?.message) || STATUS_TEXT[response.status] || 'Có lỗi xảy ra.';
     if (response.status === 401 && typeof window !== 'undefined' && window.location.pathname.startsWith('/admin') && !path.startsWith('/login')) {
       window.dispatchEvent(new CustomEvent('glg:unauthorized'));
     }

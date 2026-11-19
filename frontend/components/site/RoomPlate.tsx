@@ -13,7 +13,7 @@ export function RoomPlate({ t, sizes = '(max-width: 900px) 100vw, 640px', priori
   if (img) {
     return (
       <div className="room-plate has-photo">
-        <Image src={img.url} alt={img.alt} fill sizes={sizes} priority={priority} unoptimized={!img.url.startsWith('/images/')} />
+        <Image src={img.url} alt={img.alt} fill sizes={sizes} preload={priority} unoptimized={!img.url.startsWith('/images/')} />
       </div>
     );
   }

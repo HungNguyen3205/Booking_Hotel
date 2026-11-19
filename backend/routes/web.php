@@ -22,21 +22,21 @@ Route::pattern('id', '[0-9]+');
 Route::prefix('api')->group(function () {
     Route::get('/health', fn () => ['ok' => true, 'time' => now()->toIso8601String()]);
     Route::get('/session', [Auth::class, 'session']);
-    Route::post('/login', [Auth::class, 'login'])->middleware('throttle:8,1');
+    Route::post('/login', [Auth::class, 'login'])->middleware('throttle:login');
     Route::post('/logout', [Auth::class, 'logout'])->middleware('auth');
     Route::get('/media/{file}', [Webhooks::class, 'media']);
-    Route::post('/webhooks/payments/{provider}', [Webhooks::class, 'payment'])->middleware('throttle:120,1');
+    Route::post('/webhooks/payments/{provider}', [Webhooks::class, 'payment'])->middleware('throttle:webhook');
 
     // ---------- Website công khai ----------
-    Route::prefix('public')->middleware('throttle:120,1')->group(function () {
+    Route::prefix('public')->middleware('throttle:public')->group(function () {
         Route::get('/site', [Site::class, 'site']);
         Route::get('/room-types/{slug}', [Site::class, 'roomType']);
         Route::get('/posts', [Site::class, 'posts']);
         Route::get('/posts/{slug}', [Site::class, 'post']);
-        Route::get('/availability', [Site::class, 'availability'])->middleware('throttle:60,1');
-        Route::post('/bookings', [Site::class, 'book'])->middleware('throttle:10,1');
-        Route::post('/bookings/lookup', [Site::class, 'lookup'])->middleware('throttle:20,1');
-        Route::post('/bookings/{code}/transfer-notice', [Site::class, 'transferNotice'])->middleware('throttle:5,1');
+        Route::get('/availability', [Site::class, 'availability'])->middleware('throttle:availability');
+        Route::post('/bookings', [Site::class, 'book'])->middleware('throttle:booking');
+        Route::post('/bookings/lookup', [Site::class, 'lookup'])->middleware('throttle:lookup');
+        Route::post('/bookings/{code}/transfer-notice', [Site::class, 'transferNotice'])->middleware('throttle:transfer');
     });
 
     // ---------- Quản trị ----------

@@ -467,6 +467,29 @@ class OperationsTest extends TestCase
         $this->postJson('/api/public/bookings/lookup', ['code' => '0905123456', 'contact' => '0905123456'])->assertStatus(404);
     }
 
+    public function test_booking_code_follows_phone_entered_even_if_email_matches_old_profile(): void
+    {
+        $first = $this->pub($this->publicBooking());
+        $this->assertSame('0912345678', $first->code);
+        // Cùng email nhưng khách nhập số điện thoại mới: mã phải là số mới, số mới phải được lưu
+        $second = $this->pub($this->publicBooking(null, ['check_in' => $this->day(3), 'check_out' => $this->day(4),
+            'customer' => ['full_name' => 'Khách Website', 'phone' => '0987 654 321', 'email' => 'khach@example.test']]));
+        $this->assertSame('0987654321', $second->code);
+        $this->assertSame('0987654321', $second->customer->phone);
+        $this->assertNotSame($first->customer_id, $second->customer_id);
+        // Cùng số điện thoại (dạng +84) dùng lại đúng hồ sơ, mã thêm hậu tố
+        $third = $this->pub($this->publicBooking(null, ['check_in' => $this->day(5), 'check_out' => $this->day(6),
+            'customer' => ['full_name' => 'Khách Website', 'phone' => '+84912345678', 'email' => 'khach@example.test']]));
+        $this->assertSame('0912345678B', $third->code);
+        $this->assertSame($first->customer_id, $third->customer_id);
+        // Hồ sơ chỉ có email (chưa có SĐT): dùng lại và bổ sung số
+        $emailOnly = \App\Models\Customer::create(['kind' => 'guest', 'full_name' => 'Khách chỉ email', 'email' => 'chi-email@example.test']);
+        $fourth = $this->pub($this->publicBooking(null, ['check_in' => $this->day(7), 'check_out' => $this->day(8),
+            'customer' => ['full_name' => 'Khách chỉ email', 'phone' => '0933111222', 'email' => 'chi-email@example.test']]));
+        $this->assertSame($emailOnly->id, $fourth->customer_id);
+        $this->assertSame('0933111222', $emailOnly->fresh()->phone);
+    }
+
     public function test_room_block_prevents_sale_and_cannot_overlap_bookings(): void
     {
         $room = $this->roomNo('304');
@@ -478,6 +501,24 @@ class OperationsTest extends TestCase
         $this->assertSame('maintenance', $map['availability']);
         $this->getJson('/api/admin/setup/rooms')->assertSuccessful();
         $this->deleteJson("/api/admin/setup/rooms/{$room->id}")->assertStatus(409); // đã có giao dịch -> chỉ ngừng sử dụng
+    }
+
+    public function test_searching_does_not_use_up_booking_rate_limit(): void
+    {
+        $q = '/api/public/availability?check_in='.$this->day(1).'&check_out='.$this->day(2).'&adults=1&rooms=1';
+        for ($i = 0; $i < 15; $i++) $this->getJson($q)->assertSuccessful();
+        $this->pub($this->publicBooking()); // trước khi sửa: 429 vì chung bộ đếm với tìm phòng
+        // Giới hạn đặt phòng vẫn có hiệu lực (10/phút/IP) và tính riêng theo IP thật sau proxy tin cậy
+        for ($i = 0; $i < 9; $i++) $this->publicBooking(null, ['expected_total' => 1])->assertStatus(409);
+        $this->publicBooking()->assertStatus(429);
+        $this->withServerVariables(['REMOTE_ADDR' => '127.0.0.1', 'HTTP_X_FORWARDED_FOR' => '203.0.113.7'])
+            ->publicBooking(null, ['expected_total' => 1])->assertStatus(409);
+    }
+
+    private function pub($response): Booking
+    {
+        $response->assertCreated();
+        return Booking::where('code', $response->json('code'))->firstOrFail();
     }
 
     private function publicBooking(?string $key = null, array $override = [])

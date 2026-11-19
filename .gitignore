@@ -15,3 +15,4 @@ backend/storage/framework/views/*.php
 backend/storage/logs/*.log
 backend/.phpunit.cache/
 backend/.phpunit.result.cache
+.next-preview/

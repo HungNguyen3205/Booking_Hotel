@@ -1,0 +1,62 @@
+[
+  {
+    "n": "desktop: không chữ mờ/xuất hiện muộn khi cuộn xuống",
+    "ok": true,
+    "d": "tối đa 0 phần tử chữ mờ trong khung"
+  },
+  {
+    "n": "desktop: không khoảng trống bất thường (>55% khung một màu)",
+    "ok": true,
+    "d": "không có"
+  },
+  {
+    "n": "desktop: cuộn ngược không làm nội dung biến mất",
+    "ok": true,
+    "d": "chữ mờ khi về đầu trang=0, tiêu đề hero opacity=1"
+  },
+  {
+    "n": "desktop: dịch chuyển bố cục & khung hình dài khi cuộn",
+    "ok": true,
+    "d": "CLS khi cuộn=0.000; khung >100ms: 0 () — máy không giới hạn CPU"
+  },
+  {
+    "n": "desktop: chuyển loại phòng cập nhật đúng thẻ thông tin",
+    "ok": true,
+    "d": "Phòng đôi → Phòng gia đình → Phòng đơn"
+  },
+  {
+    "n": "mobile: không chữ mờ/xuất hiện muộn khi cuộn xuống",
+    "ok": true,
+    "d": "tối đa 0 phần tử chữ mờ trong khung"
+  },
+  {
+    "n": "mobile: không khoảng trống bất thường (>55% khung một màu)",
+    "ok": true,
+    "d": "không có"
+  },
+  {
+    "n": "mobile: cuộn ngược không làm nội dung biến mất",
+    "ok": true,
+    "d": "chữ mờ khi về đầu trang=0, tiêu đề hero opacity=1"
+  },
+  {
+    "n": "mobile: dịch chuyển bố cục & khung hình dài khi cuộn",
+    "ok": true,
+    "d": "CLS khi cuộn=0.000; khung >100ms: 0 () — máy không giới hạn CPU"
+  },
+  {
+    "n": "mobile: chuyển loại phòng cập nhật đúng thẻ thông tin",
+    "ok": true,
+    "d": "Phòng đôi → Phòng gia đình → Phòng đơn"
+  },
+  {
+    "n": "desktop: header cố định không che ô đang nhập",
+    "ok": true,
+    "d": "header đến 100px, ô nhập bắt đầu 472px"
+  },
+  {
+    "n": "mobile: header cố định không che ô đang nhập",
+    "ok": true,
+    "d": "header đến 69px, ô nhập bắt đầu 445px"
+  }
+]

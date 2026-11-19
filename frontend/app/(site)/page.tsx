@@ -52,7 +52,7 @@ export default async function HomePage() {
       {/* Ấn tượng */}
       <section className="hero" aria-labelledby="hero-title">
         <div className="hero-media">
-          <Image src="/images/glg/cong-wellness.webp" alt="Cổng tre và bảng gỗ GLG Hotel Wellness giữa tán cây xanh" fill priority sizes="100vw" className="hero-img" />
+          <Image src="/images/glg/cong-wellness.webp" alt="Cổng tre và bảng gỗ GLG Hotel Wellness giữa tán cây xanh" fill preload sizes="100vw" className="hero-img" />
         </div>
         <div className="wrap hero-inner">
           <div className="hero-kicker line">{site?.tagline ?? 'Hotel · Spa · Wellness'}<span className="kicker-addr"> — 1081 Ngô Quyền, Đà Nẵng</span></div>
