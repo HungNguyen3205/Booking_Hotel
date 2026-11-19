@@ -43,7 +43,9 @@ export function BookingFlow() {
 
   const go = (s: Step) => { setStep(s); requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })); };
 
+  const searchSeq = useRef(0);
   const search = useCallback(async (q: Query, message = '') => {
+    const id = ++searchSeq.current; // chỉ áp dụng kết quả của lần tìm mới nhất
     setSearching(true);
     setError(message);
     setResults(null);
@@ -51,25 +53,32 @@ export function BookingFlow() {
     try {
       const p = new URLSearchParams({ check_in: q.check_in, check_out: q.check_out, adults: String(q.adults), children: String(q.children), rooms: String(q.rooms) });
       const res = await api<{ results: Result[] }>(`/public/availability?${p}`);
+      if (id !== searchSeq.current) return;
       setResults(res.results);
+      // Giữ lựa chọn khi tải lại / quay lại / sang trang khác (không sửa URL giữa luồng: router sẽ coi là điều hướng)
+      try { window.sessionStorage.setItem('glg.stay', JSON.stringify(q)); } catch { /* bỏ qua */ }
       setStep('select');
     } catch (e) {
+      if (id !== searchSeq.current) return;
       setError(errorText(e));
       setStep('search');
     } finally {
-      setSearching(false);
+      if (id === searchSeq.current) setSearching(false);
     }
   }, []);
 
   useEffect(() => {
-    const ci = params.get('check_in');
-    const co = params.get('check_out');
+    let saved: { check_in?: string; check_out?: string; adults?: number; children?: number; rooms?: number } = {};
+    try { saved = JSON.parse(window.sessionStorage.getItem('glg.stay') ?? '{}'); } catch { /* bỏ qua */ }
+    const fromUrl = !!params.get('check_in');
+    const ci = params.get('check_in') ?? saved.check_in ?? null;
+    const co = params.get('check_out') ?? saved.check_out ?? null;
     const q: Query = {
       check_in: ci && ci >= todayISO() ? ci : todayISO(),
       check_out: co && ci && co > ci ? co : addDays(ci && ci >= todayISO() ? ci : todayISO(), 1),
-      adults: Math.max(1, Number(params.get('adults')) || 2),
-      children: Math.max(0, Number(params.get('children')) || 0),
-      rooms: Math.max(1, Number(params.get('rooms')) || 1),
+      adults: Math.max(1, Number(params.get('adults') ?? (fromUrl ? null : saved.adults)) || 2),
+      children: Math.max(0, Number(params.get('children') ?? (fromUrl ? null : saved.children)) || 0),
+      rooms: Math.max(1, Number(params.get('rooms') ?? (fromUrl ? null : saved.rooms)) || 1),
     };
     setQuery(q);
     if (ci && co) search(q);

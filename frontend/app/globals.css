@@ -5,9 +5,9 @@
   --warm-white: #fffdf9;
   --ink: #233d35;
   --ink-soft: #4a5e57;
-  --muted: #6b7a74;
+  --muted: #5a6862;
   --bronze: #b49563;
-  --bronze-dark: #8a6f42;
+  --bronze-dark: #7a5e33;  /* đạt AA cho chữ trên nền kem và nền nút chữ trắng */
   --sage: #a9bba6;
   --sage-soft: #e3ebe1;
   --sage-tint: #eef3ec;
@@ -28,8 +28,8 @@
   --radius-lg: 10px;
   --shadow: 0 1px 2px rgba(35, 61, 53, 0.06), 0 4px 16px rgba(35, 61, 53, 0.05);
   --shadow-lg: 0 10px 36px rgba(35, 61, 53, 0.12);
-  --serif: "Playfair Display", Georgia, "Times New Roman", serif;
-  --sans: "Inter", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --sans: "Be Vietnam Pro", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   --ease: cubic-bezier(.2, .7, .2, 1);
 }
 
@@ -45,7 +45,7 @@ button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: .55; }
 :focus-visible { outline: 2px solid var(--bronze); outline-offset: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-.serif { font-family: var(--serif); font-weight: 500; }
+.serif { font-family: var(--serif); font-weight: 600; }
 .muted { color: var(--muted); }
 .small { font-size: 13px; }
 .tiny { font-size: 12px; }
@@ -66,8 +66,8 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .btn:active:not(:disabled) { transform: translateY(1px); }
 .btn-primary { background: var(--ink); border-color: var(--ink); color: #fff; }
 .btn-primary:hover:not(:disabled) { background: var(--moss); border-color: var(--moss); }
-.btn-bronze { background: var(--bronze); border-color: var(--bronze); color: #fff; }
-.btn-bronze:hover:not(:disabled) { background: var(--bronze-dark); border-color: var(--bronze-dark); }
+.btn-bronze { background: var(--bronze-dark); border-color: var(--bronze-dark); color: #fff; }
+.btn-bronze:hover:not(:disabled) { background: #654c27; border-color: #654c27; }
 .btn-ghost { background: transparent; border-color: transparent; }
 .btn-ghost:hover:not(:disabled) { background: var(--sage-tint); border-color: transparent; }
 .btn-danger { color: var(--red-ink); border-color: #e4bdb6; }

@@ -14,7 +14,7 @@ export default function BookingPage() {
   return (
     <>
       <PageHero eyebrow="Đặt phòng" title="Đặt phòng trực tiếp" intro="Chọn ngày và số khách để xem loại phòng còn trống, giá từng đêm và chính sách trước khi đặt." />
-      <section className="wrap" style={{ paddingBottom: 72 }}>
+      <section className="wrap book-root" style={{ paddingBottom: 72 }}>
         <Suspense fallback={<Loading />}><BookingFlow /></Suspense>
       </section>
     </>

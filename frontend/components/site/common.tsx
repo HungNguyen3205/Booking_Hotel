@@ -3,16 +3,19 @@ import Link from 'next/link';
 import { AlertTriangle, BedDouble, ImageOff, Leaf, Mail, MapPin, Maximize, Phone, Users } from 'lucide-react';
 import type { RoomType, SiteData } from '@/lib/site-api';
 import { money } from '@/lib/format';
+import { RoomPlate } from './RoomPlate';
 
 export function Footer({ site }: { site: SiteData | null }) {
   const h = site?.hotel;
   return (
     <footer className="site-footer">
       <div className="wrap">
+        <div className="footer-mark" aria-hidden>GLG</div>
         <div className="cols">
           <div className="stack">
             <Link href="/" className="logo"><span className="logo-mark" aria-hidden><Leaf size={17} /></span>
-              <span><strong>GLG HOTEL &amp; SPA</strong><small>{site?.site.tagline ?? 'Hotel · Spa · Wellness'}</small></span></Link>
+              <span><strong>GLG</strong><small>Hotel &amp; Spa · Đà Nẵng</small></span></Link>
+            <p className="footer-line">Một khoảng xanh để nghỉ lại giữa nhịp sống Đà Nẵng.</p>
             <ul>
               {h?.address && <li><MapPin size={14} aria-hidden /> {h.address}</li>}
               {h?.phone && <li><Phone size={14} aria-hidden /> <a href={`tel:${h.phone.replace(/\s/g, '')}`}>{h.phone}</a></li>}
@@ -22,8 +25,8 @@ export function Footer({ site }: { site: SiteData | null }) {
           <div>
             <h2>Khám phá</h2>
             <ul>
-              <li><Link href="/phong">Loại phòng</Link></li>
-              <li><Link href="/tien-ich">Tiện ích &amp; dịch vụ</Link></li>
+              <li><Link href="/phong">Phòng nghỉ</Link></li>
+              <li><Link href="/tien-ich">Trải nghiệm &amp; dịch vụ</Link></li>
               <li><Link href="/thu-vien-anh">Thư viện ảnh</Link></li>
               <li><Link href="/uu-dai">Ưu đãi</Link></li>
               <li><Link href="/bai-viet">Bài viết</Link></li>
@@ -73,13 +76,10 @@ export function capacityText(t: RoomType) {
 }
 
 export function RoomCard({ t, headingLevel = 3 }: { t: RoomType; headingLevel?: 2 | 3 }) {
-  const img = t.images?.[0];
   const H = headingLevel === 2 ? 'h2' : 'h3';
   return (
     <article className="room-card">
-      {img ? (
-        <div className="photo"><Image src={img.url} alt={img.alt} fill sizes="(max-width: 700px) 100vw, 380px" unoptimized={!img.url.startsWith("/images/")} /></div>
-      ) : <PhotoPlaceholder />}
+      <RoomPlate t={t} compact sizes="(max-width: 700px) 100vw, 380px" />
       <div className="room-card-body">
         <H><Link href={`/phong/${t.slug}`}>{t.name}</Link></H>
         <div className="facts">

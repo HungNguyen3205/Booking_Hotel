@@ -55,8 +55,8 @@ class Settings
         ],
         'site' => [
             'tagline' => 'Hotel · Spa · Wellness',
-            'hero_title' => 'Một khoảng xanh giữa lòng Đà Nẵng',
-            'hero_subtitle' => 'Khách sạn boutique với mặt kính phủ cây xanh, cổng tre và không gian Mộc Spa.',
+            'hero_title' => 'Một khoảng xanh để nghỉ lại giữa nhịp sống Đà Nẵng',
+            'hero_subtitle' => 'Khách sạn boutique tại 1081 Ngô Quyền — mặt kính phủ cây xanh, cổng tre và Mộc Spa ngay trong khuôn viên.',
             'about' => 'GLG HOTEL & SPA nằm tại 1081 Ngô Quyền, Đà Nẵng. Nội dung giới thiệu chi tiết đang được khách sạn cập nhật.',
             'amenities' => [
                 ['icon' => 'spa', 'title' => 'Mộc Spa · Massage', 'text' => 'Không gian thư giãn toàn thân ngay trong khuôn viên.'],

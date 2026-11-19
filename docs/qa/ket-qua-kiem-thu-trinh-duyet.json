@@ -1,0 +1,97 @@
+[
+  {
+    "name": "responsive 390px /",
+    "ok": true,
+    "detail": "tràn=false (img.hero-img) thiếu-alt=0 h1=1 điều-khiển<24px=1"
+  },
+  {
+    "name": "responsive 390px /phong",
+    "ok": true,
+    "detail": "tràn=false thiếu-alt=0 h1=1 điều-khiển<24px=1"
+  },
+  {
+    "name": "responsive 390px /phong/phong-doi",
+    "ok": true,
+    "detail": "tràn=false thiếu-alt=0 h1=1 điều-khiển<24px=1"
+  },
+  {
+    "name": "responsive 390px /tien-ich",
+    "ok": true,
+    "detail": "tràn=false thiếu-alt=0 h1=1 điều-khiển<24px=1"
+  },
+  {
+    "name": "responsive 390px /thu-vien-anh",
+    "ok": true,
+    "detail": "tràn=false thiếu-alt=0 h1=1 điều-khiển<24px=1"
+  },
+  {
+    "name": "responsive 390px /lien-he",
+    "ok": true,
+    "detail": "tràn=false thiếu-alt=0 h1=1 điều-khiển<24px=1"
+  },
+  {
+    "name": "responsive 390px /gioi-thieu",
+    "ok": true,
+    "detail": "tràn=false thiếu-alt=0 h1=1 điều-khiển<24px=1"
+  },
+  {
+    "name": "responsive 390px /dat-phong",
+    "ok": true,
+    "detail": "tràn=false thiếu-alt=0 h1=1 điều-khiển<24px=1"
+  },
+  {
+    "name": "responsive 390px /tra-cuu",
+    "ok": true,
+    "detail": "tràn=false thiếu-alt=0 h1=1 điều-khiển<24px=1"
+  },
+  {
+    "name": "Tab qua liên kết có viền focus",
+    "ok": true,
+    "detail": "A:Bỏ qua đến nội dun|true · A:GLGHotel & Spa · Đ|true · A:Phòng nghỉ|true · A:Trải nghiệm|true · A:Thư viện|true · A:Ưu đãi|true"
+  },
+  {
+    "name": "Menu điện thoại: mở, Esc đóng, focus trả về nút",
+    "ok": true,
+    "detail": "mở=true đóng=true focus=true"
+  },
+  {
+    "name": "Nút Đặt phòng luôn thấy trên điện thoại",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "name": "Giảm chuyển động: không còn animation, không phần tử mờ",
+    "ok": true,
+    "detail": "animations=0 mờ=0"
+  },
+  {
+    "name": "CLS/LCP 390px (máy cục bộ, không giới hạn mạng)",
+    "ok": true,
+    "detail": "CLS=0.000 LCP=178ms phần tử=IMG.hero-img"
+  },
+  {
+    "name": "CLS/LCP 1440px (máy cục bộ, không giới hạn mạng)",
+    "ok": true,
+    "detail": "CLS=0.001 LCP=224ms phần tử=IMG.hero-img"
+  },
+  {
+    "name": "Trang chủ → kết quả phòng trống",
+    "ok": true,
+    "detail": "ngày nhận 2026-11-22"
+  },
+  {
+    "name": "Bấm đúp \"Đặt phòng\" chỉ tạo 1 yêu cầu, có mã xác nhận",
+    "ok": true,
+    "detail": "POST=1 mã=0977111222"
+  },
+  {
+    "name": "Xác nhận không báo \"đã thanh toán\" khi chưa thu tiền",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "name": "Sang trang khác vẫn giữ ngày đã chọn",
+    "ok": true,
+    "detail": "ngày=2026-11-22"
+  }
+]

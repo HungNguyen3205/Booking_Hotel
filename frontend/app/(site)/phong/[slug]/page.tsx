@@ -3,7 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getRoomType, getSite, SITE_URL } from '@/lib/site-api';
-import { capacityText, JsonLd, Paragraphs, PhotoPlaceholder, RoomCard } from '@/components/site/common';
+import { capacityText, JsonLd, Paragraphs, RoomCard } from '@/components/site/common';
+import { RoomPlate } from '@/components/site/RoomPlate';
 import { SearchForm } from '@/components/site/SearchForm';
 import { money } from '@/lib/format';
 
@@ -55,7 +56,7 @@ export default async function RoomTypePage({ params }: Props) {
               {images.map(img => <figure key={img.url}><div className="photo"><Image src={img.url} alt={img.alt} fill sizes="(max-width: 700px) 100vw, 400px"
                 unoptimized={!img.url.startsWith('/images/')} /></div></figure>)}
             </div>
-          ) : <PhotoPlaceholder />}
+          ) : <RoomPlate t={t} priority sizes="(max-width: 900px) 100vw, 760px" />}
           <dl className="spec">
             <div><dt>Diện tích</dt><dd>{t.area} m²</dd></div>
             <div><dt>Giường</dt><dd>{t.bed ?? 'Đang cập nhật'}</dd></div>

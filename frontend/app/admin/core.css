@@ -146,3 +146,16 @@ button.cal-bar[draggable="true"] { cursor: grab; }
   .page { padding: 0; }
   .card { box-shadow: none; border-color: #ccc; }
 }
+
+/* Danh sách phòng (điện thoại): giữ màu trạng thái, chữ luôn đủ tương phản */
+.room-row.tile-vacant { background: #fff; }
+.room-row.tile-arriving { background: #e6eff8; border-color: #a9c3dc; }
+.room-row.tile-occupied { background: var(--moss); border-color: #2f4a3d; color: #fff; }
+.room-row.tile-occupied .small, .room-row.tile-occupied .num { color: #eef3ef; }
+.room-row.tile-departing { box-shadow: inset 4px 0 0 #e3b860; }
+.room-row.tile-dirty { background: #fbf0d9; border-color: #e6cb8d; }
+.room-row.tile-blocked { background: repeating-linear-gradient(135deg, #ebe9e4 0 8px, #f3f2ee 8px 16px); }
+/* Thanh lịch ngắn: ưu tiên tên khách, ẩn số tiền khi không đủ chỗ */
+.cal-bar { container-type: inline-size; }
+@container (max-width: 150px) { .bar-due { display: none; } }
+.room-row.tile-occupied .b-moss { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .45); }

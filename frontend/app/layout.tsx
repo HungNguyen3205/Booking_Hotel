@@ -1,16 +1,19 @@
 import type { Metadata, Viewport } from 'next';
-import '@fontsource/inter/vietnamese-400.css';
-import '@fontsource/inter/vietnamese-500.css';
-import '@fontsource/inter/vietnamese-600.css';
-import '@fontsource/inter/vietnamese-700.css';
-import '@fontsource/inter/latin-400.css';
-import '@fontsource/inter/latin-500.css';
-import '@fontsource/inter/latin-600.css';
-import '@fontsource/inter/latin-700.css';
-import '@fontsource/playfair-display/vietnamese-500.css';
-import '@fontsource/playfair-display/latin-500.css';
-import '@fontsource/playfair-display/vietnamese-400-italic.css';
-import '@fontsource/playfair-display/latin-400-italic.css';
+// Nội dung: Be Vietnam Pro (thiết kế cho tiếng Việt). Tiêu đề: Cormorant Garamond (có nghiêng làm điểm nhấn).
+import '@fontsource/be-vietnam-pro/vietnamese-400.css';
+import '@fontsource/be-vietnam-pro/vietnamese-500.css';
+import '@fontsource/be-vietnam-pro/vietnamese-600.css';
+import '@fontsource/be-vietnam-pro/vietnamese-700.css';
+import '@fontsource/be-vietnam-pro/latin-400.css';
+import '@fontsource/be-vietnam-pro/latin-500.css';
+import '@fontsource/be-vietnam-pro/latin-600.css';
+import '@fontsource/be-vietnam-pro/latin-700.css';
+import '@fontsource/cormorant-garamond/vietnamese-500.css';
+import '@fontsource/cormorant-garamond/vietnamese-600.css';
+import '@fontsource/cormorant-garamond/vietnamese-500-italic.css';
+import '@fontsource/cormorant-garamond/latin-500.css';
+import '@fontsource/cormorant-garamond/latin-600.css';
+import '@fontsource/cormorant-garamond/latin-500-italic.css';
 import './globals.css';
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/+$/, '');
