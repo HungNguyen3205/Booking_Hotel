@@ -433,6 +433,8 @@ html:has(.site) { scroll-padding-top: calc(var(--header-h, 72px) + 16px); }
 .book-hero p { margin-top: 14px; max-width: 520px; font-size: 17px; color: #dfe6e1; }
 .book-root { padding-bottom: 80px; }
 .book-flow { position: relative; margin-top: clamp(-96px, -8vw, -64px); }
+/* màn hình hoàn tất không có khung tìm phòng đè lên ảnh → không kéo lên */
+.book-flow.is-done { margin-top: 32px; }
 
 /* Khung tìm phòng = vé: hai ngày nối bằng cuống "số đêm", đường xé, khách, nút */
 .ticket-search { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) auto; align-items: end;
@@ -542,3 +544,50 @@ html:has(.site) { scroll-padding-top: calc(var(--header-h, 72px) + 16px); }
   .book-hero h1 { max-width: none; }
 }
 @media (prefers-reduced-motion: reduce) { .stay-option { transition: none; } }
+
+/* ---------- Kết quả đặt phòng / tra cứu ----------
+   Mã = số điện thoại: dùng chữ không chân, số thẳng hàng (Cormorant mặc định dùng số kiểu cổ, 9-7-3-8 thụt xuống nên khó đọc). */
+.code-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.confirm-code { display: inline-flex; gap: .32em; font-family: var(--sans); font-weight: 600; font-size: clamp(30px, 5vw, 44px);
+  letter-spacing: .02em; font-variant-numeric: lining-nums tabular-nums; color: var(--ink); line-height: 1.1; }
+.confirm-code span:nth-child(4) { color: var(--bronze-dark); }
+.guest-line { color: var(--ink-soft); }
+.guest-line strong { color: var(--ink); margin-left: 4px; }
+
+/* Danh sách nhãn – giá trị dùng chung (QR, tra cứu) */
+.site .dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 18px; margin: 0; font-size: 14.5px; }
+.site .dl dt { color: var(--muted); }
+.site .dl dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* Biên nhận tiền: các dòng bên trái, ô "cọc còn cần thanh toán" nổi bật bên phải */
+.receipt { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; align-items: stretch; margin-top: 4px; }
+.receipt-lines { margin: 0; display: grid; align-content: start; border: 1px solid var(--line); border-radius: 12px; padding: 6px 18px; background: var(--warm-white); }
+.receipt-lines > div { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 11px 0; border-bottom: 1px dashed var(--line); }
+.receipt-lines > div:last-child { border-bottom: 0; }
+.receipt-lines dt { color: var(--ink-soft); font-size: 14.5px; }
+.receipt-lines dd { margin: 0; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.receipt-lines > div:first-child dd { font-size: 18px; }
+.receipt-lines .pending dd { color: var(--bronze-dark); }
+.receipt-lines .rest dt, .receipt-lines .rest dd { color: var(--muted); font-weight: 400; }
+.receipt-due { display: grid; align-content: center; gap: 8px; padding: 20px 22px; border-radius: 12px; background: var(--ink); color: var(--cream); position: relative; overflow: hidden; }
+.receipt-due::after { content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 34px; background: var(--bamboo); opacity: .55; }
+.due-label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-soft); font-weight: 600; }
+.due-amount { font-size: clamp(30px, 4vw, 38px); font-weight: 600; font-variant-numeric: lining-nums tabular-nums; line-height: 1.1; color: #fff; }
+.due-bar { height: 6px; border-radius: 999px; background: rgba(247, 244, 238, .18); overflow: hidden; margin-top: 4px; max-width: calc(100% - 40px); }
+.due-bar span { display: block; height: 100%; background: var(--gold-soft); border-radius: inherit; }
+.due-note { font-size: 13px; color: #cfd9d3; }
+.receipt-due.is-clear { background: var(--sage-tint); color: var(--ink); }
+.receipt-due.is-clear .due-label { color: var(--moss, var(--ink)); }
+.receipt-due.is-clear .due-amount { color: var(--ink); }
+.receipt-due.is-clear .due-note { color: var(--ink-soft); }
+.receipt-due.is-clear .due-bar { background: rgba(35, 61, 53, .12); }
+.receipt-due.is-clear .due-bar span { background: var(--ink); }
+.policy-note { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 14px 16px; border-radius: 12px; background: var(--cream-2); color: var(--ink-soft); font-size: 13.5px; line-height: 1.65; }
+.policy-note svg { margin-top: 3px; color: var(--bronze-dark); }
+.policy-note p { margin: 0; }
+.policy-note strong { display: block; color: var(--ink); font-size: 14px; margin-bottom: 2px; }
+@media (max-width: 720px) {
+  .receipt { grid-template-columns: 1fr; }
+  .site .dl { grid-template-columns: 1fr; gap: 2px; }
+  .site .dl dd { margin-bottom: 8px; }
+}

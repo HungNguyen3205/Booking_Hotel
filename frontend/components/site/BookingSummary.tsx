@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import QRCode from 'qrcode';
-import { CheckCircle2, Clock, Copy, Hourglass, QrCode } from 'lucide-react';
+import { CheckCircle2, Clock, Copy, Hourglass, QrCode, ShieldCheck } from 'lucide-react';
 import { api } from '@/lib/api';
 import { dateTimeVN, dateVN, errorText, money } from '@/lib/format';
 import { Notice } from '@/components/ui';
@@ -14,6 +14,13 @@ export type PublicBooking = {
   policy: { rate_plan?: string | null; description?: string | null; deposit_percent?: number } | null;
   payment: { qr: string; bank_name: string; account_number: string; account_name: string; amount: number; message: string } | null;
 };
+
+/** Chia mã cho dễ đọc: SĐT 10 số → 4-3-3 (0971 120 038), hậu tố chữ (B, C…) tách riêng. Chỉ là hiển thị; nút Chép vẫn chép mã gốc. */
+function codeGroups(code: string): string[] {
+  const m = code.match(/^(\d{10})([A-Z]?)$/);
+  if (!m) return [code];
+  return [m[1].slice(0, 4), m[1].slice(4, 7), m[1].slice(7), ...(m[2] ? [m[2]] : [])];
+}
 
 function StatusBadge({ b }: { b: PublicBooking }) {
   const cls = b.status === 'hold' ? 'b-amber' : b.status === 'confirmed' || b.status === 'checked_in' ? 'b-sage' : 'b-neutral';
@@ -63,8 +70,11 @@ export function BookingSummary({ booking, contact, onUpdate }: { booking: Public
     <div className="stack" style={{ gap: 18 }}>
       <div className="card card-pad stack">
         <div className="row-between"><span className="eyebrow">Mã đặt phòng</span><StatusBadge b={b} /></div>
-        <div className="row"><span className="confirm-code">{b.code}</span><CopyText value={b.code} /></div>
-        <p>Khách đặt: <strong>{b.guest_name}</strong></p>
+        <div className="code-row">
+          <span className="confirm-code" aria-label={`Mã đặt phòng ${b.code}`}>{codeGroups(b.code).map((g, i) => <span key={i}>{g}</span>)}</span>
+          <CopyText value={b.code} />
+        </div>
+        <p className="guest-line">Khách đặt <strong>{b.guest_name}</strong></p>
         {b.status === 'hold' && b.hold_expires_at && (
           <Notice kind="warn">Phòng đang được <strong>giữ chỗ đến {dateTimeVN(b.hold_expires_at)}</strong>. Sau thời điểm này, nếu khách sạn chưa nhận được tiền cọc, giữ chỗ sẽ tự hủy.</Notice>
         )}
@@ -76,14 +86,31 @@ export function BookingSummary({ booking, contact, onUpdate }: { booking: Public
             ))}</tbody>
           </table>
         </div>
-        <dl className="dl" style={{ maxWidth: 420 }}>
-          <dt>Tổng tiền</dt><dd>{money(b.total)}</dd>
-          <dt>Tiền cọc yêu cầu</dt><dd>{money(b.deposit_required)}</dd>
-          <dt>Đã ghi nhận thanh toán</dt><dd>{money(b.paid)}</dd>
-          {b.pending_claims > 0 && <><dt>Đang chờ đối soát</dt><dd>{money(b.pending_claims)}</dd></>}
-          <dt className="total">Cọc còn lại</dt><dd className="total">{money(b.deposit_remaining)}</dd>
-        </dl>
-        {b.policy?.description && <p className="small muted"><strong>Chính sách ({b.policy.rate_plan}):</strong> {b.policy.description}</p>}
+        <div className="receipt">
+          <dl className="receipt-lines">
+            <div><dt>Tổng tiền phòng</dt><dd>{money(b.total)}</dd></div>
+            <div><dt>Tiền cọc yêu cầu{b.policy?.deposit_percent ? ` (${b.policy.deposit_percent}%)` : ''}</dt><dd>{money(b.deposit_required)}</dd></div>
+            <div><dt>Đã ghi nhận thanh toán</dt><dd>{money(b.paid)}</dd></div>
+            {b.pending_claims > 0 && <div className="pending"><dt>Đang chờ khách sạn đối soát</dt><dd>{money(b.pending_claims)}</dd></div>}
+            <div className="rest"><dt>Còn lại sau tiền cọc</dt><dd>{money(Math.max(0, b.total - b.deposit_required))}</dd></div>
+          </dl>
+          <div className={`receipt-due ${b.deposit_remaining > 0 ? '' : 'is-clear'}`}>
+            <span className="due-label">{b.deposit_remaining > 0 ? 'Cọc còn cần thanh toán' : 'Đã đủ tiền cọc'}</span>
+            <strong className="due-amount">{money(b.deposit_remaining)}</strong>
+            {b.deposit_required > 0 && (
+              <>
+                <div className="due-bar" role="progressbar" aria-label="Tiền cọc đã ghi nhận" aria-valuemin={0} aria-valuemax={b.deposit_required} aria-valuenow={Math.min(b.paid, b.deposit_required)}>
+                  <span style={{ width: `${Math.min(100, Math.round(b.paid / b.deposit_required * 100))}%` }} />
+                </div>
+                <span className="due-note">Đã ghi nhận {money(Math.min(b.paid, b.deposit_required))} / {money(b.deposit_required)}</span>
+              </>
+            )}
+          </div>
+        </div>
+        {b.policy?.description && (
+          <div className="policy-note"><ShieldCheck size={16} aria-hidden />
+            <p><strong>Chính sách {b.policy.rate_plan ? `· ${b.policy.rate_plan}` : ''}</strong>{b.policy.description}</p></div>
+        )}
       </div>
 
       {waiting && b.deposit_remaining > 0 && (b.payment ? (

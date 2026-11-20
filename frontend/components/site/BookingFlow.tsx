@@ -136,7 +136,7 @@ export function BookingFlow() {
   const pick = (r: Result, p: Plan) => { setChoice({ result: r, plan: p }); setError(''); setAccept(false); go('book'); };
 
   return (
-    <div className="book-flow">
+    <div className={`book-flow ${step === 'done' ? 'is-done' : ''}`}>
       {step !== 'done' && (
         <form className="ticket-search" onSubmit={submitSearch} aria-label="Ngày lưu trú và số khách">
           <div className="ts-dates">
