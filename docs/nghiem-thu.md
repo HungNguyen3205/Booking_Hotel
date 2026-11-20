@@ -141,6 +141,19 @@ Trước tối ưu: Performance 53 / 66 / 66, LCP 4,5–5,0 s. SEO của bản x
 
 ### 2.4. Backend: **đã kiểm chứng**, 27/27 kiểm thử, 270 assertion (`php vendor/bin/phpunit`)
 
+### 2.5. Thiết kế lại trang đặt phòng "vé lưu trú" (20/11/2026, theo yêu cầu chủ dự án)
+
+- **Đầu trang:** dải ảnh thật cổng GLG Hotel Wellness. Không dùng ảnh hàng rào tre đầy đủ vì có bảng hiệu "Đặc sản Huế cung đình" của cơ sở khác.
+- **Khung tìm phòng dạng vé:** hai ô ngày nối bằng cuống "số đêm", đường xé, số khách, nút tìm.
+- **Thẻ phòng có hình:** ảnh thật khi khách sạn tải lên. Khi chưa có, hiển thị tấm diện tích ghi rõ "Ảnh phòng thực tế đang cập nhật"; không lấy ảnh khác thay ảnh phòng. Nút "Đặt phòng này" đặt ngay trên từng gói giá.
+- **Gộp hai bước "Thông tin" và "Xác nhận" thành một:** form người đặt, chính sách và ô đồng ý nằm cùng một trang, bên cạnh là "vé lưu trú" tóm tắt phòng, ngày, khách, tổng tiền và tiền cọc. Luồng còn 4 bước.
+- **Kiểm chứng trên bản build production của môi trường xem trước:**
+  - Không tràn ngang ở 1440 và 390 px.
+  - `qa.cjs` đạt 19/19.
+  - `booking-slow.cjs` đạt 7/7, chạy 3 lần; tìm phòng trên Slow 4G mất 1,4–2,3 s.
+  - Một lần thử ảnh đầu trang ưu tiên tải (`preload`) làm tìm phòng chậm lên 7,0 s, nên ảnh này để mức ưu tiên thấp.
+- **Chưa kiểm chứng:** trên thiết bị thật (mục 3).
+
 ---
 
 ## 3. Checklist thử trên thiết bị thật: **chưa kiểm thử, không tính là đạt**

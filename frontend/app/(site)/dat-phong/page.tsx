@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { Suspense } from 'react';
 import { BookingFlow } from '@/components/site/BookingFlow';
 import { Loading } from '@/components/ui';
-import { PageHero } from '@/components/site/common';
 
 export const metadata: Metadata = {
   title: 'Đặt phòng trực tiếp',
@@ -13,8 +13,19 @@ export const metadata: Metadata = {
 export default function BookingPage() {
   return (
     <>
-      <PageHero eyebrow="Đặt phòng" title="Đặt phòng trực tiếp" intro="Chọn ngày và số khách để xem loại phòng còn trống, giá từng đêm và chính sách trước khi đặt." />
-      <section className="wrap book-root" style={{ paddingBottom: 72 }}>
+      {/* Dải ảnh thật (cổng GLG Hotel Wellness) làm nền; khung tìm phòng dạng "vé lưu trú" nằm đè lên mép dưới.
+          Không dùng ảnh hàng rào tre đầy đủ vì có bảng hiệu của cơ sở khác. */}
+      <section className="book-hero">
+        <div className="book-hero-media" aria-hidden>
+          <Image src="/images/glg/cong-wellness.webp" alt="" fill sizes="100vw" fetchPriority="low" />
+        </div>
+        <div className="wrap book-hero-text">
+          <div className="eyebrow">Đặt phòng trực tiếp</div>
+          <h1>Giữ cho mình <em>một khoảng xanh</em></h1>
+          <p>Chọn ngày và số khách, xem phòng còn trống cùng giá từng đêm, rồi hoàn tất ngay trên một trang.</p>
+        </div>
+      </section>
+      <section className="wrap book-root">
         <Suspense fallback={<Loading />}><BookingFlow /></Suspense>
       </section>
     </>

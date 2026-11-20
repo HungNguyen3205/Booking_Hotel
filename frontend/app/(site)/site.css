@@ -420,3 +420,125 @@ html:has(.site) { scroll-padding-top: calc(var(--header-h, 72px) + 16px); }
 .is-overlay .site-nav a { color: #f4efe6; }
 .stage-slide { visibility: hidden; transition: opacity .7s var(--ease), transform 1s var(--ease), visibility 0s linear .7s; }
 .stage-slide.on { visibility: visible; transition-delay: 0s; }
+
+/* ---------- Trang đặt phòng: "vé lưu trú" ----------
+   Dải ảnh thật (hàng rào tre) → khung tìm phòng dạng vé đè lên mép ảnh → thẻ phòng có ảnh → một bước điền & xác nhận kèm vé tóm tắt. */
+.book-hero { position: relative; isolation: isolate; color: var(--cream); padding-block: clamp(48px, 7vw, 96px) clamp(96px, 11vw, 132px); overflow: hidden; }
+.book-hero-media { position: absolute; inset: 0; z-index: -1; background: var(--ink-deep); }
+.book-hero-media img { object-fit: cover; object-position: center 35%; }
+.book-hero-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, rgba(20, 38, 31, .92) 0%, rgba(20, 38, 31, .72) 45%, rgba(20, 38, 31, .35) 100%); }
+.book-hero .eyebrow { color: var(--gold-soft); }
+.book-hero h1 { font-size: clamp(38px, 5.6vw, 64px); line-height: 1.04; margin-top: 10px; max-width: 14ch; color: var(--cream); }
+.book-hero h1 em { color: var(--gold-soft); }
+.book-hero p { margin-top: 14px; max-width: 520px; font-size: 17px; color: #dfe6e1; }
+.book-root { padding-bottom: 80px; }
+.book-flow { position: relative; margin-top: clamp(-96px, -8vw, -64px); }
+
+/* Khung tìm phòng = vé: hai ngày nối bằng cuống "số đêm", đường xé, khách, nút */
+.ticket-search { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) auto; align-items: end;
+  background: var(--warm-white); color: var(--ink); border-radius: 18px; box-shadow: 0 24px 60px rgba(20, 36, 31, .22); margin-bottom: 28px; overflow: hidden; }
+.ticket-search .field > span { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ticket-search .input, .ticket-search .select { min-height: 46px; border-radius: 10px; }
+.ts-dates { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: end; padding: 18px 20px; }
+.ts-stub { display: grid; justify-items: center; align-content: center; min-width: 54px; height: 46px; padding-inline: 6px; border-radius: 999px;
+  border: 1px dashed var(--bronze); color: var(--bronze-dark); line-height: 1.05; }
+.ts-stub svg { display: none; }
+.ts-stub strong { font-family: var(--serif); font-size: 22px; color: var(--ink); }
+.ts-stub span { font-size: 11px; }
+.ts-guests { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 18px 20px; position: relative; }
+.ts-guests::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; border-left: 2px dashed var(--line); }
+.ts-go { margin: 18px 20px 18px 0; min-height: 48px; padding-inline: 22px; }
+
+/* Thanh bước: chấm số nối bằng vạch */
+.book-flow .steps { gap: 0; margin-bottom: 22px; scroll-margin-top: calc(var(--header-h) + 16px); }
+.book-flow .steps li { border: 0; background: none; padding: 6px 16px 6px 0; gap: 8px; }
+.book-flow .steps li + li::before { content: ""; width: 28px; height: 1px; background: var(--line); margin-right: 8px; }
+.book-flow .steps li.done + li::before { background: var(--sage); }
+.step-dot { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 999px; border: 1px solid var(--line); font-size: 12px; font-weight: 600; background: var(--warm-white); }
+.book-flow .steps li[aria-current="step"] .step-dot { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+.book-flow .steps li.done .step-dot { background: var(--sage-tint); border-color: var(--sage); color: var(--ink); }
+
+/* Danh sách phòng: ảnh bên trái, thông tin + gói giá bên phải */
+.stay-list { display: grid; gap: 18px; }
+.stay-query { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--ink-soft); font-size: 15px; }
+.stay-option { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); background: var(--warm-white); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+  transition: box-shadow .25s ease; }
+.stay-option:hover { box-shadow: 0 16px 40px rgba(20, 36, 31, .12); }
+.stay-option.is-off .stay-media { filter: grayscale(.6); }
+.stay-media { position: relative; }
+.stay-media .room-plate { height: 100%; min-height: 260px; aspect-ratio: auto; border-radius: 0; }
+.stay-media .room-plate.compact .plate-name { display: block; font-size: 20px; }
+.stay-flag { position: absolute; left: 14px; top: 14px; padding: 4px 10px; border-radius: 999px; background: var(--cream); color: var(--bronze-dark); font-size: 12.5px; font-weight: 600; }
+.stay-body { display: grid; align-content: start; }
+.stay-head { display: grid; gap: 8px; padding: 22px 24px 18px; }
+.stay-head h3 { font-size: 30px; line-height: 1.1; }
+.stay-desc { color: var(--ink-soft); font-size: 14.5px; max-width: 60ch; }
+.stay-head .link-arrow { justify-self: start; }
+.stay-off { margin: 0 24px 22px; padding: 10px 14px; border-radius: 10px; background: var(--cream-2); color: var(--ink-soft); font-size: 14px; }
+.stay-option .plan { grid-template-columns: minmax(0, 1fr) auto; padding: 16px 24px; border-top: 1px dashed var(--line); align-items: end; }
+.plan-info { display: grid; gap: 4px; }
+.plan-buy { display: grid; justify-items: end; gap: 4px; }
+.plan-buy .btn { margin-top: 6px; }
+
+/* Bước điền & xác nhận: form + vé lưu trú */
+.book-form .field small { color: var(--muted); font-size: 12.5px; }
+.book-form .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 14px; }
+.book-form .field { align-content: start; }
+.book-form .input { min-height: 46px; border-radius: 10px; }
+.book-form .textarea { border-radius: 10px; }
+.policy-box { display: grid; gap: 6px; padding: 14px 16px; border-radius: 12px; background: var(--sage-tint); }
+.policy-box strong { display: inline-flex; align-items: center; gap: 6px; }
+.book-submit { width: 100%; min-height: 52px; font-size: 16px; }
+.stay-ticket { position: sticky; top: calc(var(--header-h) + 20px); display: grid; background: var(--warm-white); border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+  box-shadow: 0 18px 44px rgba(20, 36, 31, .12); }
+.ticket-media .room-plate { border-radius: 0; }
+.ticket-top { display: grid; gap: 4px; padding: 18px 20px 6px; }
+.ticket-room { font-family: var(--serif); font-size: 28px; line-height: 1.1; }
+.ticket-dates { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 12px 20px 18px; }
+.ticket-dates > div:not(.ticket-nights) { display: grid; gap: 2px; }
+.ticket-dates > div:last-child { text-align: right; }
+.ticket-dates span { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ticket-dates strong { font-family: var(--serif); font-size: 21px; font-variant-numeric: tabular-nums; }
+.ticket-nights { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; border: 1px dashed var(--bronze); color: var(--bronze-dark); font-weight: 600; font-size: 14px; }
+/* đường xé: nét đứt với hai khuyết tròn ở mép */
+.ticket-tear { position: relative; border-top: 2px dashed var(--line); margin-inline: 16px; }
+.ticket-tear::before, .ticket-tear::after { content: ""; position: absolute; top: -12px; width: 22px; height: 22px; border-radius: 50%; background: var(--cream); box-shadow: inset 0 0 0 1px var(--line); }
+.ticket-tear::before { left: -28px; }
+.ticket-tear::after { right: -28px; }
+.ticket-dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 0; margin: 0; padding: 18px 20px 6px; font-size: 14px; }
+.ticket-dl dt { color: var(--muted); }
+.ticket-dl dd { margin: 0; padding-left: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+.ticket-dl .total { font-weight: 600; font-size: 17px; color: var(--ink); border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
+.stay-ticket > .tiny { padding: 6px 20px 18px; }
+
+@media (max-width: 1080px) {
+  .ticket-search { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .ts-go { grid-column: 1 / -1; margin: 0 20px 18px; }
+}
+@media (max-width: 860px) {
+  .stay-option { grid-template-columns: 1fr; }
+  .stay-media .room-plate { min-height: 0; aspect-ratio: 16 / 9; }
+  .stay-ticket { position: static; order: -1; }
+  .ticket-media { display: none; }
+}
+@media (max-width: 640px) {
+  .ticket-search { grid-template-columns: 1fr; border-radius: 16px; }
+  .ts-dates, .ts-guests { padding: 16px; }
+  .ts-guests::before { left: 14px; right: 14px; top: 0; bottom: auto; border-left: 0; border-top: 2px dashed var(--line); }
+  .ts-go { margin: 0 16px 16px; }
+  /* hai ô ngày cạnh nhau; cuống "số đêm" thành nhãn nhỏ phía trên */
+  .ts-dates { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ts-stub { grid-column: 1 / -1; order: -1; justify-self: start; display: inline-flex; gap: 4px; height: auto; min-width: 0; padding: 3px 12px; align-items: baseline; }
+  .ts-stub strong { font-size: 16px; }
+  .ticket-search .input[type="date"] { padding-inline: 8px; font-size: 15px; }
+  .book-flow .steps { row-gap: 6px; }
+  .stay-head, .stay-option .plan { padding-inline: 16px; }
+  .stay-option .plan { grid-template-columns: 1fr; }
+  .book-form .form-grid { grid-template-columns: 1fr; }
+  .plan-buy { justify-items: stretch; grid-template-columns: 1fr auto; align-items: baseline; }
+  .plan-buy .btn { grid-column: 1 / -1; }
+  .book-flow .steps li { padding-right: 6px; font-size: 12.5px; }
+  .book-flow .steps li + li::before { display: none; }
+  .book-hero h1 { max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) { .stay-option { transition: none; } }

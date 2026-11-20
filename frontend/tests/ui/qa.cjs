@@ -112,11 +112,10 @@ async function ctx(browser, width, height = 860, extra = {}) {
     await p.fill('input[autocomplete=name]', 'Khách kiểm thử giao diện');
     await p.fill('input[type=tel]', '0977111222');
     await p.fill('input[type=email]', 'qa-ui@example.test');
-    await p.click('button:has-text("Tiếp tục")');
     await p.waitForSelector('input[type=checkbox]');
     await p.screenshot({ path: `${out}/book-2-review.jpg`, type: 'jpeg', quality: 70, fullPage: true });
     await p.check('input[type=checkbox]');
-    const btn = p.locator('button.btn-bronze:has-text("Đặt phòng")').last();
+    const btn = p.locator('button.book-submit');
     await btn.dblclick();
     await p.waitForSelector('.confirm-code', { timeout: 20000 });
     const code = (await p.textContent('.confirm-code')).trim();

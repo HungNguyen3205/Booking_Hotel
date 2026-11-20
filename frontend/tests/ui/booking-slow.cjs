@@ -42,14 +42,13 @@ const day = n => new Date(Date.now() + 7 * 3600000 + n * 86400000).toISOString()
   await p.fill('input[autocomplete=name]', 'Khách thử mạng chậm');
   await p.fill('input[type=tel]', phone);
   await p.fill('input[type=email]', 'slow-net@example.test');
-  await p.click('button:has-text("Tiếp tục")');
   await p.check('input[type=checkbox]');
   await p.screenshot({ path: `${out}/slow-review.jpg`, type: 'jpeg', quality: 70, fullPage: true });
 
   // Lần gửi đầu: mất mạng (offline thật qua DevTools) → phải báo lỗi rõ, không báo thành công
   const slow = { latency: 150, downloadThroughput: 1.6 * 1024 * 1024 / 8, uploadThroughput: 750 * 1024 / 8 };
   await cdp.send('Network.emulateNetworkConditions', { offline: true, ...slow });
-  const btn = p.locator('button.btn-bronze:has-text("Đặt phòng")').last();
+  const btn = p.locator('button.book-submit');
   await btn.click();
   const errShown = await p.waitForSelector('.notice-error', { timeout: 30000 }).then(e => e.textContent()).catch(() => null);
   log('Mất mạng khi gửi: báo lỗi rõ, không báo thành công', !!errShown && !(await p.$('.confirm-code')), (errShown || 'không thấy thông báo lỗi').trim().slice(0, 110));
