@@ -45,7 +45,6 @@ step "Backend: nạp cache cấu hình/route/view"
 "$PHP_BIN" artisan config:clear >/dev/null && "$PHP_BIN" artisan route:clear >/dev/null && "$PHP_BIN" artisan view:clear >/dev/null
 "$PHP_BIN" artisan config:cache
 "$PHP_BIN" artisan route:cache
-"$PHP_BIN" artisan view:cache
 
 # ---------- Frontend (Next.js) ----------
 step "Frontend: kiểm tra .env.production.local"
