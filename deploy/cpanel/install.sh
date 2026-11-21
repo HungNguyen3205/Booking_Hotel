@@ -169,6 +169,15 @@ for f in index.html index.htm index.php default.html; do
   if [ -n "$DOCROOT" ] && [ -f "$DOCROOT/$f" ]; then warn "Có file $DOCROOT/$f — nó có thể che trang chủ website. Nếu là trang mặc định của hosting, hãy đổi tên/xóa."; fi
 done
 
+# Chuyển http và www sang https://<ten-mien> (phiên đăng nhập admin chỉ chạy trên https)
+if [ -n "$DOCROOT" ] && ! grep -q 'GLG-HTTPS' "$DOCROOT/.htaccess" 2>/dev/null; then
+  step "Bật chuyển hướng http/www → https://$DOMAIN"
+  [ -f "$DOCROOT/.htaccess" ] && cp "$DOCROOT/.htaccess" "$DOCROOT/.htaccess.bak-glg"
+  { printf '# GLG-HTTPS\nRewriteEngine On\nRewriteCond %%{HTTPS} off [OR]\nRewriteCond %%{HTTP_HOST} ^www\\. [NC]\nRewriteRule ^ https://%s%%{REQUEST_URI} [L,R=301]\n# /GLG-HTTPS\n\n' "$DOMAIN"
+    cat "$DOCROOT/.htaccess.bak-glg" 2>/dev/null || true; } > "$DOCROOT/.htaccess.new-glg"
+  mv "$DOCROOT/.htaccess.new-glg" "$DOCROOT/.htaccess"
+fi
+
 # ---------- Build + khởi động ----------
 bash "$ROOT/deploy/cpanel/deploy.sh" --no-pull
 
