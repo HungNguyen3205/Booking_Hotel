@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { Search } from 'lucide-react';
+import { Mail, Phone, Search, TicketCheck } from 'lucide-react';
 import { api } from '@/lib/api';
 import { errorText } from '@/lib/format';
 import { Notice } from '@/components/ui';
@@ -32,10 +32,31 @@ export function LookupForm() {
 
   return (
     <div className="stack" style={{ gap: 20 }}>
-      <form className="card card-pad form-grid" onSubmit={submit} style={{ alignItems: 'end' }}>
-        <label className="field"><span>Mã đặt phòng</span><input className="input" name="code" required maxLength={20} placeholder="Số điện thoại đã đặt (VD 0905123456)" autoCapitalize="characters" /></label>
-        <label className="field"><span>Email đã dùng khi đặt phòng</span><input className="input" name="contact" type="email" autoComplete="email" required maxLength={200} /></label>
-        <button className="btn btn-primary" disabled={busy}><Search size={16} aria-hidden /> {busy ? 'Đang tra cứu…' : 'Tra cứu'}</button>
+      <form className="lookup-card" onSubmit={submit} aria-labelledby="lookup-title">
+        <div className="lookup-head">
+          <span className="lookup-badge" aria-hidden><TicketCheck size={22} /></span>
+          <div>
+            <h2 id="lookup-title">Tìm đặt phòng của bạn</h2>
+            <p>Nhập mã đặt phòng và email bạn đã dùng khi đặt.</p>
+          </div>
+        </div>
+        <div className="lookup-fields">
+          <label className="field">
+            <span>Mã đặt phòng</span>
+            <span className="input-icon"><Phone size={17} aria-hidden />
+              <input className="input" name="code" required maxLength={20} placeholder="VD: 0905123456" autoCapitalize="characters" autoComplete="off" inputMode="text" /></span>
+            <small>Thường là số điện thoại bạn đã dùng khi đặt phòng.</small>
+          </label>
+          <label className="field">
+            <span>Email</span>
+            <span className="input-icon"><Mail size={17} aria-hidden />
+              <input className="input" name="contact" type="email" autoComplete="email" required maxLength={200} placeholder="ten@email.com" /></span>
+            <small>Email bạn đã nhập khi đặt phòng.</small>
+          </label>
+        </div>
+        <div className="lookup-actions">
+          <button className="btn btn-primary" disabled={busy}><Search size={17} aria-hidden /> {busy ? 'Đang tra cứu…' : 'Tra cứu đặt phòng'}</button>
+        </div>
       </form>
       {error && <Notice kind="error">{error}</Notice>}
       {booking && <BookingSummary booking={booking} contact={contact} onUpdate={setBooking} />}

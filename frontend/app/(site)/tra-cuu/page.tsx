@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function LookupPage() {
   return (
     <>
-      <PageHero eyebrow="Đặt phòng" title="Tra cứu đặt phòng" intro="Nhập mã đặt phòng cùng email hoặc số điện thoại đã dùng khi đặt." />
+      <PageHero eyebrow="Đặt phòng" title="Tra cứu đặt phòng" intro="Xem lại thông tin đặt phòng bằng mã đặt phòng và email đã dùng khi đặt." />
       <section className="wrap-narrow" style={{ paddingBottom: 72 }}><LookupForm /></section>
     </>
   );
