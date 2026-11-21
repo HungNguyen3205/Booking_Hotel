@@ -73,7 +73,8 @@ fi
 
 step "Frontend: build (có thể mất vài phút)"
 # --webpack: Turbopack cần SWC bản native (glibc >= 2.29); Webpack chạy được với SWC WebAssembly trên máy chủ cũ
-NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}" npm run build -- --webpack
+# NEXT_BUILD_CPUS=1: hosting giới hạn số tiến trình, nhiều worker sẽ lỗi EAGAIN
+NEXT_BUILD_CPUS="${NEXT_BUILD_CPUS:-1}" NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}" npm run build -- --webpack
 
 step "Frontend: khởi động lại ứng dụng Node"
 mkdir -p tmp && touch tmp/restart.txt
