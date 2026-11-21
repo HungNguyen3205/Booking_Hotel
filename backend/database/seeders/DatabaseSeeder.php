@@ -22,8 +22,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = env('HOTEL_ADMIN_EMAIL');
-        $password = env('HOTEL_ADMIN_PASSWORD');
+        $email = config('hotel.admin_email');
+        $password = config('hotel.admin_password');
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen((string) $password) < 12) {
             throw new \RuntimeException('Đặt HOTEL_ADMIN_EMAIL và HOTEL_ADMIN_PASSWORD (tối thiểu 12 ký tự) trong .env trước khi seed.');
         }

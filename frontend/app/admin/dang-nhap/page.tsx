@@ -2,7 +2,7 @@
 
 import { FormEvent, Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Leaf, LogIn } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { post, setCsrf } from '@/lib/api';
 import { Notice } from '@/components/ui';
 import { errorText } from '@/lib/format';
@@ -31,7 +31,7 @@ function LoginForm() {
 
   return (
     <form className="login-card card" onSubmit={submit}>
-      <div className="login-brand"><span className="brand-mark"><Leaf size={18} /></span><div><strong>GLG HOTEL &amp; SPA</strong><small>Hệ thống vận hành</small></div></div>
+      <div className="login-brand"><span className="brand-mark"><img src="/images/glg/logo.webp" alt="" width={36} height={36} /></span><div><strong>GLG HOTEL &amp; SPA</strong><small>Hệ thống vận hành</small></div></div>
       <h1 className="serif">Đăng nhập</h1>
       {error && <Notice kind="error">{error}</Notice>}
       <label className="field"><span>Email</span><input className="input" name="email" type="email" autoComplete="username" required /></label>

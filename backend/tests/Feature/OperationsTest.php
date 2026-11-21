@@ -5,6 +5,7 @@ use App\Models\Booking;
 use App\Models\HousekeepingTask;
 use App\Models\Payment;
 use App\Models\RateRule;
+use App\Models\Property;
 use App\Models\Service;
 use App\Models\Stay;
 use App\Services\AvailabilityService;
@@ -227,7 +228,7 @@ class OperationsTest extends TestCase
         $this->postJson('/api/admin/shifts', ['opening_cash' => 500000])->assertSuccessful();
         $this->postJson("/api/admin/bookings/{$a->id}/payments", ['kind' => 'deposit', 'method' => 'cash', 'amount' => 360000])->assertSuccessful();
         $folio = $a->folios()->first();
-        $minibar = Service::create(['property_id' => 1, 'category' => 'laundry', 'name' => 'Giặt', 'unit' => 'kg', 'price' => 50000]);
+        $minibar = Service::create(['property_id' => Property::first()->id, 'category' => 'laundry', 'name' => 'Giặt', 'unit' => 'kg', 'price' => 50000]);
         $line = $this->postJson("/api/admin/folios/{$folio->id}/services", ['service_id' => $minibar->id, 'quantity' => 2])->assertSuccessful();
         $this->postJson("/api/admin/folios/{$folio->id}/lines", ['type' => 'discount', 'description' => 'Giảm giá', 'amount' => -100000])->assertStatus(422);
         $this->postJson("/api/admin/folios/{$folio->id}/lines", ['type' => 'discount', 'description' => 'Giảm giá', 'amount' => -100000, 'reason' => 'Khách thân thiết'])->assertSuccessful();
@@ -397,9 +398,9 @@ class OperationsTest extends TestCase
 
     public function test_minibar_sale_deducts_stock_once_and_restores_on_void(): void
     {
-        $item = \App\Models\InventoryItem::create(['property_id' => 1, 'sku' => 'W', 'name' => 'Nước', 'category' => 'minibar', 'unit' => 'chai', 'min_stock' => 2]);
+        $item = \App\Models\InventoryItem::create(['property_id' => Property::first()->id, 'sku' => 'W', 'name' => 'Nước', 'category' => 'minibar', 'unit' => 'chai', 'min_stock' => 2]);
         $this->actingAs($this->owner)->postJson('/api/admin/inventory/movements', ['inventory_item_id' => $item->id, 'type' => 'receive', 'quantity' => 10])->assertSuccessful();
-        $svc = Service::create(['property_id' => 1, 'category' => 'minibar', 'name' => 'Nước minibar', 'unit' => 'chai', 'price' => 15000, 'inventory_item_id' => $item->id]);
+        $svc = Service::create(['property_id' => Property::first()->id, 'category' => 'minibar', 'name' => 'Nước minibar', 'unit' => 'chai', 'price' => 15000, 'inventory_item_id' => $item->id]);
         $a = $this->bookingOf($this->book(['room_type_id' => $this->type('DBL')->id, 'check_in' => $this->day(0), 'check_out' => $this->day(1)]));
         $line = $this->postJson('/api/admin/folios/'.$a->folios()->first()->id.'/services', ['service_id' => $svc->id, 'quantity' => 3])->assertSuccessful();
         $this->assertSame(7, $item->refresh()->on_hand);
@@ -412,9 +413,9 @@ class OperationsTest extends TestCase
 
     public function test_walk_in_sale_reversal_restores_stock_once(): void
     {
-        $item = \App\Models\InventoryItem::create(['property_id' => 1, 'sku' => 'CF', 'name' => 'Cà phê gói', 'category' => 'consumable', 'unit' => 'gói', 'min_stock' => 1]);
+        $item = \App\Models\InventoryItem::create(['property_id' => Property::first()->id, 'sku' => 'CF', 'name' => 'Cà phê gói', 'category' => 'consumable', 'unit' => 'gói', 'min_stock' => 1]);
         $this->actingAs($this->owner)->postJson('/api/admin/inventory/movements', ['inventory_item_id' => $item->id, 'type' => 'receive', 'quantity' => 5])->assertSuccessful();
-        $svc = Service::create(['property_id' => 1, 'category' => 'coffee', 'name' => 'Cà phê', 'unit' => 'ly', 'price' => 30000, 'inventory_item_id' => $item->id]);
+        $svc = Service::create(['property_id' => Property::first()->id, 'category' => 'coffee', 'name' => 'Cà phê', 'unit' => 'ly', 'price' => 30000, 'inventory_item_id' => $item->id]);
         $this->postJson('/api/admin/shifts', ['opening_cash' => 0])->assertSuccessful();
         $entry = $this->postJson('/api/admin/services/walk-in', ['service_id' => $svc->id, 'quantity' => 2, 'method' => 'cash'])->assertSuccessful();
         $this->assertSame(3, $item->refresh()->on_hand);

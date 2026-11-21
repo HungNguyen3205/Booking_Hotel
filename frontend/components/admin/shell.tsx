@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
-import { ChevronsLeft, ChevronsRight, Leaf, LogOut, Menu, Plus, Search, X } from 'lucide-react';
+import { ChevronsLeft, ChevronsRight, LogOut, Menu, Plus, Search, X } from 'lucide-react';
 import { dateVN, todayISO, weekday } from '@/lib/format';
 import { useSession } from './session';
 import { CommandPalette } from './command-palette';
@@ -32,7 +32,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     <div className={`admin ${collapsed ? 'nav-mini' : ''}`}>
       <aside className={`sidebar ${open ? 'open' : ''}`} aria-label="Menu quản trị">
         <div className="sidebar-brand">
-          <span className="brand-mark"><Leaf size={16} /></span>
+          <span className="brand-mark"><img src="/images/glg/logo.webp" alt="" width={36} height={36} /></span>
           <div className="brand-text"><strong>GLG HOTEL &amp; SPA</strong><small>{property.name}</small></div>
           <button className="icon-btn sidebar-close" onClick={() => setOpen(false)} aria-label="Đóng menu"><X size={18} /></button>
         </div>

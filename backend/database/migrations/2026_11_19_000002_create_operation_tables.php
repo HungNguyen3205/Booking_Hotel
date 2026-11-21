@@ -258,7 +258,7 @@ return new class extends Migration {
             $t->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $t->timestamps();
             // Một dòng phí minibar chỉ trừ kho một lần
-            $t->unique(['ref_type', 'ref_id', 'inventory_item_id', 'type']);
+            $t->unique(['ref_type', 'ref_id', 'inventory_item_id', 'type'], 'inv_mov_ref_item_type_unique'); // tên ngắn: MySQL giới hạn 64 ký tự
         });
 
         Schema::create('housekeeping_tasks', function (Blueprint $t) {

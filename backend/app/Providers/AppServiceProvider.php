@@ -17,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Website gọi API qua proxy của Next.js nên IP thấy được là IP máy chạy Next.js. Chỉ tin X-Forwarded-For
+        // từ các proxy liệt kê ở TRUSTED_PROXIES; reverse proxy trước Next.js phải ghi IP thật của khách vào header này.
+        \Illuminate\Http\Middleware\TrustProxies::at(config('hotel.trusted_proxies'));
+
         // Mỗi loại thao tác có bộ đếm riêng (Laravel ghép tên limiter vào khóa). Trước đây dùng "throttle:X,1"
         // nên mọi route công khai chung một bộ đếm theo IP: vài lần tìm phòng đã làm khách bị chặn khi đặt phòng.
         $limits = [

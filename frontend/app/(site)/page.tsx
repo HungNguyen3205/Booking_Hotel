@@ -38,7 +38,7 @@ export default async function HomePage() {
   const quiet = amenities.filter(a => !AMENITY_PHOTO[a.icon]);
 
   const jsonLd = data && {
-    '@context': 'https://schema.org', '@type': 'Hotel', name: hotel!.name, url: SITE_URL,
+    '@context': 'https://schema.org', '@type': 'Hotel', name: hotel!.name, url: SITE_URL, logo: `${SITE_URL}/images/glg/logo.png`,
     address: { '@type': 'PostalAddress', streetAddress: hotel!.address?.split(',')[0]?.trim() ?? '1081 Ngô Quyền', addressLocality: 'Đà Nẵng', addressCountry: 'VN' },
     ...(hotel!.phone && { telephone: hotel!.phone }), ...(hotel!.email && { email: hotel!.email }),
     checkinTime: hotel!.check_in_time, checkoutTime: hotel!.check_out_time, currenciesAccepted: hotel!.currency,

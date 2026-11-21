@@ -15,6 +15,10 @@ return [
         'coffee' => '/images/services/ca-phe.webp', 'yoga' => '/images/services/yoga.webp', 'other' => '/images/glg/cong-wellness-sm.webp',
     ],
     'seed_demo' => (bool) env('HOTEL_SEED_DEMO', true),
+    // Đọc qua config (không gọi env() ngoài thư mục config) để vẫn đúng khi chạy `php artisan config:cache`.
+    'admin_email' => env('HOTEL_ADMIN_EMAIL'),
+    'admin_password' => env('HOTEL_ADMIN_PASSWORD'),
+    'trusted_proxies' => array_values(array_filter(array_map('trim', explode(',', (string) env('TRUSTED_PROXIES', '127.0.0.1,::1'))))),
     'demo_password' => env('HOTEL_DEMO_PASSWORD', ''),
 
     'property' => [
@@ -32,7 +36,13 @@ return [
         ['code' => 'SGL', 'slug' => 'phong-don', 'name' => 'Phòng đơn', 'count' => 8, 'area' => 18, 'base_rate' => 350000,
             'base_adults' => 1, 'max_adults' => 2, 'max_children' => 1, 'max_occupancy' => 2],
         ['code' => 'DBL', 'slug' => 'phong-doi', 'name' => 'Phòng đôi', 'count' => 10, 'area' => 25, 'base_rate' => 450000,
-            'base_adults' => 2, 'max_adults' => 2, 'max_children' => 1, 'max_occupancy' => 3],
+            'base_adults' => 2, 'max_adults' => 2, 'max_children' => 1, 'max_occupancy' => 3,
+            // Ảnh thật do khách sạn cung cấp (21/11/2026): phòng đôi 2 giường và phòng tắm riêng
+            'images' => [
+                ['url' => '/images/rooms/phong-doi-1.webp', 'alt' => 'Phòng đôi GLG: hai giường, bàn trang điểm gương tròn, tranh biển Đà Nẵng và máy lạnh'],
+                ['url' => '/images/rooms/phong-doi-2.webp', 'alt' => 'Phòng đôi GLG nhìn về phía cửa ra vào: hai giường, bàn ghế ngồi, kệ sách gỗ tròn và rèm xanh'],
+                ['url' => '/images/rooms/phong-doi-3.webp', 'alt' => 'Phòng tắm riêng của phòng đôi: lavabo, gương, vòi sen đứng và bồn cầu'],
+            ]],
         ['code' => 'FAM', 'slug' => 'phong-gia-dinh', 'name' => 'Phòng gia đình', 'count' => 4, 'area' => 32, 'base_rate' => 600000,
             'base_adults' => 2, 'max_adults' => 2, 'max_children' => 2, 'max_occupancy' => 4],
     ],

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { Leaf, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const NAV = [
   { href: '/phong', label: 'Phòng nghỉ' },
@@ -39,7 +39,7 @@ export function Header() {
     <header className={`site-header ${overlay && !scrolled && !open ? 'is-overlay' : 'is-solid'}`}>
       <div className="wrap header-row">
         <Link href="/" className="logo" title="Về trang chủ">
-          <span className="logo-mark" aria-hidden><Leaf size={17} /></span>
+          <span className="logo-mark" aria-hidden><img src="/images/glg/logo.webp" alt="" width={46} height={46} /></span>
           <span><strong>GLG</strong><small>Hotel &amp; Spa · Đà Nẵng</small></span>
         </Link>
         <nav id="site-nav" className={`site-nav ${open ? 'open' : ''}`} aria-label="Điều hướng chính">

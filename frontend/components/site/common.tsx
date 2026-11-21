@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { AlertTriangle, BedDouble, ImageOff, Leaf, Mail, MapPin, Maximize, Phone, Users } from 'lucide-react';
+import { AlertTriangle, BedDouble, ImageOff, Mail, MapPin, Maximize, Phone, Users } from 'lucide-react';
 import type { RoomType, SiteData } from '@/lib/site-api';
 import { money } from '@/lib/format';
 import { RoomPlate } from './RoomPlate';
@@ -13,7 +13,7 @@ export function Footer({ site }: { site: SiteData | null }) {
         <div className="footer-mark" aria-hidden>GLG</div>
         <div className="cols">
           <div className="stack">
-            <Link href="/" className="logo"><span className="logo-mark" aria-hidden><Leaf size={17} /></span>
+            <Link href="/" className="logo"><span className="logo-mark" aria-hidden><img src="/images/glg/logo.webp" alt="" width={46} height={46} /></span>
               <span><strong>GLG</strong><small>Hotel &amp; Spa · Đà Nẵng</small></span></Link>
             <p className="footer-line">Một khoảng xanh để nghỉ lại giữa nhịp sống Đà Nẵng.</p>
             <ul>

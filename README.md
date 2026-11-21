@@ -91,6 +91,10 @@ Windows (máy chủ đơn): chạy thường trực `php artisan schedule:work`.
 
 ## 4. Triển khai
 
+**cPanel (kéo code bằng git, build trên server):** xem [docs/trien-khai-cpanel.md](docs/trien-khai-cpanel.md) — cập nhật bằng `bash deploy/cpanel/deploy.sh`.
+
+**Máy chủ riêng (VPS):**
+
 1. **Backend**: PHP-FPM + Nginx trỏ `backend/public`. `.env`: `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://ten-mien`, `SESSION_SECURE_COOKIE=true`. Khuyến nghị MySQL/MariaDB cho nhiều người dùng đồng thời (đặt `DB_CONNECTION=mysql` và thông tin DB). Chạy `composer install --no-dev --optimize-autoloader`, `php artisan migrate --force`, `php artisan db:seed --force` (lần đầu; đặt `HOTEL_SEED_DEMO=false`), `php artisan config:cache route:cache`. Thư mục `storage/` và (nếu dùng) file SQLite phải ghi được và nằm trên ổ bền vững.
 2. **Frontend**: `npm ci && npm run build && npm run start` (hoặc PM2/systemd). Biến môi trường khi build và chạy: `HOTEL_API_URL` (địa chỉ nội bộ của Laravel), `NEXT_PUBLIC_SITE_URL` (tên miền công khai, dùng cho canonical/sitemap).
 3. Reverse proxy: tên miền chính → Next.js (cổng 3000). Next.js tự chuyển `/api/*` sang Laravel; không cần mở Laravel ra Internet trừ khi muốn nhận webhook trực tiếp.

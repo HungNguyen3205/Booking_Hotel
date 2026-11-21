@@ -1,5 +1,5 @@
 .env
-.env.local
+.env*.local
 node_modules/
 .next/
 next-env.d.ts
@@ -16,3 +16,6 @@ backend/storage/logs/*.log
 backend/.phpunit.cache/
 backend/.phpunit.result.cache
 .next-preview/
+deploy/cpanel/deploy.env
+frontend/tmp/
+frontend/stderr.log
