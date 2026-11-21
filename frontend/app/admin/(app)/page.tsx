@@ -7,7 +7,8 @@ import {
   AlertTriangle, BedDouble, Bot, Boxes, Brush, CalendarCheck, CheckCircle2, Clock, DoorOpen, Hourglass, LogIn, LogOut, Percent, RefreshCw, Star, Wallet, Wrench,
 } from 'lucide-react';
 import { get, post, qs } from '@/lib/api';
-import { addDays, dateVN, money, timeVN, todayISO } from '@/lib/format';
+import { addDays, dateVN, money, SOURCES, timeVN, todayISO } from '@/lib/format';
+import { ChartCard, OccupancyChart, RevenueChart, RoomStatusChart, SourcesChart, Swatch } from '@/components/admin/charts';
 import { ErrorState, Loading, Notice, useAction, useLoad } from '@/components/ui';
 import { PageHead, RequirePerm } from '@/components/admin/shell';
 import { useSession } from '@/components/admin/session';
@@ -31,6 +32,11 @@ type Dashboard = {
     collected_net: number; room_nights_sold: number; room_nights_available: number; on_books_revenue: number };
   receivables_total?: number;
   trend?: { date: string; room_revenue: number; service_revenue: number; occupancy: number }[];
+  charts?: {
+    room_status: { occupied: number; ready: number; dirty: number; blocked: number };
+    forecast: { date: string; sold: number; available: number; occupancy: number }[];
+    sources?: { source: string; bookings: number; cancelled: number; room_value: number }[];
+  };
 };
 
 const PRESETS = { today: 'Hôm nay', '7d': '7 ngày', month: 'Tháng này' } as const;
@@ -85,6 +91,8 @@ function Today() {
         <Kpi href="/admin/buong-phong" icon={Brush} tone="amber" label="Cần dọn" value={data.dirty} sub={`${data.tasks_open} việc đang mở`} />
         <Kpi href="/admin/buong-phong" icon={Wrench} tone="grey" label="Bảo trì / ngừng bán" value={data.blocked} sub={`${data.tickets_open} sự cố mở`} />
       </div>
+
+      {data.charts && <Charts charts={data.charts} trend={data.trend} />}
 
       <div className="todo-grid">
         {/* Khách đến */}
@@ -193,7 +201,6 @@ function Today() {
               <dt className="total">Công nợ hiện tại</dt><dd className="total">{money(data.receivables_total)}</dd>
             </dl>
           </div>
-          {data.trend && <Trend points={data.trend} />}
         </section>
       )}
     </div>
@@ -204,27 +211,32 @@ function Kpi({ href, icon: Icon, label, value, sub, tone }: { href: string; icon
   return <Link className={`kpi ${tone ? `tone-${tone}` : ''}`} href={href}><span><Icon aria-hidden /> {label}</span><strong>{value}</strong>{sub && <small>{sub}</small>}</Link>;
 }
 
-function Trend({ points }: { points: NonNullable<Dashboard['trend']> }) {
-  const max = Math.max(1, ...points.map(p => p.room_revenue + p.service_revenue));
+function Charts({ charts, trend }: { charts: NonNullable<Dashboard['charts']>; trend?: Dashboard['trend'] }) {
+  const f = charts.forecast;
+  const avg = f.length ? Math.round(f.reduce((a, p) => a + p.occupancy, 0) / f.length) : 0;
   return (
-    <div className="card-pad" style={{ borderTop: '1px solid var(--line)' }}>
-      <p className="small muted" style={{ marginBottom: 8 }}>Doanh thu 7 ngày gần nhất (phòng + dịch vụ)</p>
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${points.length}, 1fr)`, gap: 10, alignItems: 'end', height: 130 }}>
-        {points.map(p => {
-          const total = p.room_revenue + p.service_revenue;
-          return (
-            <div key={p.date} style={{ display: 'grid', gap: 4, justifyItems: 'center', height: '100%', alignContent: 'end' }} title={`${dateVN(p.date)}: ${money(total)} · công suất ${p.occupancy}%`}>
-              <span className="tiny muted num">{total ? `${Math.round(total / 1000)}k` : ''}</span>
-              <div style={{ width: '64%', display: 'flex', flexDirection: 'column', height: `${Math.max(3, (total / max) * 90)}px`, borderRadius: '6px 6px 2px 2px', overflow: 'hidden', background: 'var(--grey)' }}>
-                <div style={{ background: 'var(--bronze)', flex: `0 0 ${total ? (p.service_revenue / total) * 100 : 0}%` }} />
-                <div style={{ background: 'var(--moss)', flex: '1 1 auto', display: total ? 'block' : 'none' }} />
-              </div>
-              <span className="tiny muted">{dateVN(p.date, true)}</span>
-            </div>
-          );
-        })}
-      </div>
-      <div className="legend" style={{ border: 0, padding: '6px 0 0' }}><span><i className="sw" style={{ background: 'var(--moss)' }} /> Phòng</span><span><i className="sw" style={{ background: 'var(--bronze)' }} /> Dịch vụ</span></div>
+    <div className={`viz chart-grid ${trend ? "" : "no-rev"}`}>
+      {trend && (
+        <ChartCard title="Doanh thu 14 ngày gần nhất" sub={`Tổng ${money(trend.reduce((a, p) => a + p.room_revenue + p.service_revenue, 0))}`}
+          legend={<><Swatch c="var(--s1)" label="Phòng" /><Swatch c="var(--s2)" label="Dịch vụ & phụ thu" /></>}
+          table={<table className="table"><thead><tr><th>Ngày</th><th className="num">Phòng</th><th className="num">Dịch vụ & phụ thu</th><th className="num">Công suất</th></tr></thead>
+            <tbody>{trend.map(p => <tr key={p.date}><td>{dateVN(p.date)}</td><td className="num">{money(p.room_revenue)}</td><td className="num">{money(p.service_revenue)}</td><td className="num">{p.occupancy}%</td></tr>)}</tbody></table>}>
+          <RevenueChart points={trend} />
+        </ChartCard>
+      )}
+      <ChartCard title="Tình trạng phòng hôm nay">
+        <RoomStatusChart status={charts.room_status} />
+      </ChartCard>
+      <ChartCard title="Công suất đã đặt 14 đêm tới" sub={`Trung bình ${avg}% · tính cả giữ chỗ và đặt chưa gán phòng`}
+        table={<table className="table"><thead><tr><th>Đêm</th><th className="num">Đã đặt</th><th className="num">Bán được</th><th className="num">Công suất</th></tr></thead>
+          <tbody>{f.map(p => <tr key={p.date}><td>{dateVN(p.date)}</td><td className="num">{p.sold}</td><td className="num">{p.available}</td><td className="num">{p.occupancy}%</td></tr>)}</tbody></table>}>
+        <OccupancyChart points={f} />
+      </ChartCard>
+      {charts.sources && (
+        <ChartCard title="Nguồn đặt phòng · 30 ngày" sub="Số đơn tạo mới theo kênh">
+          <SourcesChart rows={charts.sources} labels={SOURCES} />
+        </ChartCard>
+      )}
     </div>
   );
 }

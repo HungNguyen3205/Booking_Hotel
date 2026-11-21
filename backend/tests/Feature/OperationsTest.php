@@ -6,6 +6,7 @@ use App\Models\HousekeepingTask;
 use App\Models\Payment;
 use App\Models\RateRule;
 use App\Models\Property;
+use App\Models\Room;
 use App\Models\Service;
 use App\Models\Stay;
 use App\Services\AvailabilityService;
@@ -423,6 +424,33 @@ class OperationsTest extends TestCase
         $this->postJson('/api/admin/cash-entries/'.$entry->json('id').'/reverse', ['reason' => 'Lặp'])->assertStatus(409);
         $this->assertSame(5, $item->refresh()->on_hand);
         $this->assertSame(0, app(\App\Services\ReportService::class)->summary(1, $this->day(0), $this->day(0))['service_revenue']);
+    }
+
+    public function test_dashboard_charts_match_bookings(): void
+    {
+        $room = $this->roomNo('301');
+        $guest = $this->bookingOf($this->book(['room_type_id' => $room->room_type_id, 'room_id' => $room->id, 'check_in' => $this->day(0), 'check_out' => $this->day(2)]));
+        $this->postJson('/api/admin/stays/'.$guest->stays()->first()->id.'/check-in', [])->assertSuccessful();
+        $this->bookingOf($this->book(['room_type_id' => $this->type('SGL')->id, 'check_in' => $this->day(1), 'check_out' => $this->day(3)], ['source' => 'direct']));
+
+        $res = $this->getJson('/api/admin/dashboard')->assertSuccessful();
+        $total = Room::count();
+        $this->assertSame($total, array_sum($res->json('charts.room_status')));
+        $this->assertSame(1, $res->json('charts.room_status.occupied'));
+        $forecast = $res->json('charts.forecast');
+        $this->assertCount(14, $forecast);
+        $this->assertSame([1, 2, 1, 0], array_column(array_slice($forecast, 0, 4), 'sold'));
+        $this->assertSame($total, $forecast[0]['available']);
+        $sources = collect($res->json('charts.sources'))->pluck('bookings', 'source');
+        $this->assertSame(1, $sources['phone']);
+        $this->assertSame(1, $sources['direct']);
+        $this->assertCount(14, $res->json('trend'));
+
+        // Lễ tân không có quyền doanh thu: vẫn thấy biểu đồ vận hành, không thấy nguồn/doanh thu
+        $res = $this->actingAs($this->staff('receptionist'))->getJson('/api/admin/dashboard')->assertSuccessful();
+        $this->assertNotNull($res->json('charts.forecast'));
+        $this->assertNull($res->json('charts.sources'));
+        $this->assertNull($res->json('trend'));
     }
 
     public function test_daily_automation_marks_no_show_creates_stayover_cleaning_and_assigns(): void

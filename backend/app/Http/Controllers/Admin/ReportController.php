@@ -57,10 +57,39 @@ class ReportController extends Controller
             'todo' => $this->todo($today, $folios),
             'automation' => Settings::get('automation_state')['last_result'] ?? null,
         ];
+        // Biểu đồ vận hành (không cần quyền doanh thu): tình trạng phòng hôm nay + công suất đã đặt 14 đêm tới
+        $occupiedSet = $occupiedRoomIds->filter()->flip();
+        $blockedSet = $blockedIds->flip();
+        $status = ['occupied' => 0, 'ready' => 0, 'dirty' => 0, 'blocked' => 0];
+        foreach ($rooms as $r) {
+            $key = isset($blockedSet[$r->id]) ? 'blocked' : (isset($occupiedSet[$r->id]) ? 'occupied' : ($r->housekeeping === 'clean' ? 'ready' : 'dirty'));
+            $status[$key]++;
+        }
+        $horizonEnd = CarbonImmutable::parse($today)->addDays(14)->toDateString();
+        $onBooks = $stays()->whereIn('status', ['hold', 'confirmed', 'checked_in'])
+            ->where('check_in', '<', $horizonEnd)->where('check_out', '>', $today)->get(['check_in', 'check_out']);
+        $blocksByNight = \DB::table('room_nights')->whereIn('room_id', $rooms->pluck('id'))->whereNotNull('room_block_id')
+            ->whereBetween('night', [$today, CarbonImmutable::parse($horizonEnd)->subDay()->toDateString()])
+            ->selectRaw('night, COUNT(*) as n')->groupBy('night')->pluck('n', 'night');
+        $data['charts'] = [
+            'room_status' => $status,
+            'forecast' => collect(range(0, 13))->map(function ($i) use ($today, $onBooks, $blocksByNight, $rooms) {
+                $night = CarbonImmutable::parse($today)->addDays($i)->toDateString();
+                $sold = $onBooks->filter(fn ($s) => $s->check_in->toDateString() <= $night && $s->check_out->toDateString() > $night)->count();
+                $available = max(0, $rooms->count() - (int) ($blocksByNight[$night] ?? 0));
+                return ['date' => $night, 'sold' => $sold, 'available' => $available,
+                    'occupancy' => $available ? round(min($sold, $available) * 100 / $available, 1) : 0];
+            })->values(),
+        ];
+
         if ($this->allowed('revenue.view')) {
             $data['period'] = $this->reports->summary($this->pid(), $from, $to);
             $data['receivables_total'] = array_sum(array_column($this->reports->receivables($this->pid()), 'balance'));
-            $data['trend'] = collect(range(6, 0))->map(function ($i) use ($to) {
+            $sourceFrom = CarbonImmutable::parse($today)->subDays(29)->toDateString();
+            $data['charts']['sources'] = collect($this->reports->bySource($this->pid(), $sourceFrom, $today))
+                ->map(fn ($r) => ['source' => $r['source'], 'bookings' => (int) $r['bookings'], 'cancelled' => (int) $r['cancelled'], 'room_value' => (int) $r['room_value']])
+                ->sortByDesc('bookings')->values();
+            $data['trend'] = collect(range(13, 0))->map(function ($i) use ($to) {
                 $day = CarbonImmutable::parse($to)->subDays($i)->toDateString();
                 $s = $this->reports->summary($this->pid(), $day, $day);
                 return ['date' => $day, 'room_revenue' => $s['room_revenue'], 'service_revenue' => $s['service_revenue'] + $s['other_revenue'], 'occupancy' => $s['occupancy']];
