@@ -17,9 +17,10 @@
 .stay-guest { font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
 .stay-guest:hover { text-decoration: underline; }
 
-/* Mặt bằng: tọa độ theo % để co giãn; màn hẹp cuộn ngang + phóng to */
-.plan-scroll { overflow-x: auto; overflow-y: hidden; padding: 18px; background: #faf9f5; }
-.plan { position: relative; min-width: 760px; margin: 0 auto; }
+/* Mặt bằng: vẽ ở khổ cố định (PLAN_W) rồi scale cho vừa khung; chỉ cuộn khi phóng to */
+.plan-scroll { overflow-y: hidden; padding: 18px; background: #faf9f5; }
+.plan-sizer { position: relative; margin: 0 auto; }
+.plan { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
 .landmark { position: absolute; display: grid; place-items: center; text-align: center; font-size: 12px; line-height: 1.35; color: #8a938e; border-radius: 10px; padding: 6px; }
 .lm-corridor { background: #ece8df; border-radius: 4px; }
 .lm-courtyard { border: 1.5px dashed #d8d1c2; background: transparent; color: #a3a99f; font-style: italic; }

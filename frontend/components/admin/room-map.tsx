@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle, ArrowUpDown, BedDouble, Brush, CalendarPlus, ConciergeBell, CreditCard, DoorOpen, Footprints, LogIn, LogOut, Minus, Plus,
   Search, Star, Users, Wrench, Building2, Map as MapIcon, List,
@@ -71,9 +71,26 @@ export function FloorPlan({ data, floorId, filter, typeId, query, selectedId, on
   const floor = data.floors.find(f => f.id === floorId)!;
   const rooms = data.rooms.filter(r => r.floor_id === floorId);
   const visible = (r: MapRoom) => matches(r, filter) && (!typeId || r.room_type_id === typeId) && matchQuery(r, query);
+  // Mặt bằng luôn vừa khung ở mức 100% (không cuộn ngang). Khung rộng >= PLAN_MIN_W: trải 100% như cũ, chữ giữ cỡ gốc.
+  // Khung hẹp hơn: vẽ ở PLAN_MIN_W rồi thu nhỏ đồng đều cho vừa. Phóng to (+) mới cần cuộn.
+  const box = useRef<HTMLDivElement>(null);
+  const [avail, setAvail] = useState(PLAN_MIN_W);
+  useLayoutEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const measure = () => { if (el.clientWidth > 0) setAvail(el.clientWidth - 36); };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const PLAN_W = Math.max(PLAN_MIN_W, avail);
+  const scale = (avail / PLAN_W) * zoom;
+  const planH = PLAN_W * (floor.map_height / floor.map_width);
   return (
-    <div className="plan-scroll">
-      <div className="plan" style={{ aspectRatio: `${floor.map_width} / ${floor.map_height}`, width: `${zoom * 100}%` }}>
+    <div className="plan-scroll" ref={box} style={{ overflowX: zoom > 1 ? 'auto' : 'hidden' }}>
+      <div className="plan-sizer" style={{ width: PLAN_W * scale, height: planH * scale }}>
+      <div className="plan" style={{ width: PLAN_W, height: planH, transform: `scale(${scale})` }}>
         {(floor.landmarks ?? []).map((l, i) => (
           <div key={i} className={`landmark lm-${l.type}`} style={pos(l, floor)} aria-hidden={l.type === 'corridor'}>
             {l.type !== 'corridor' && <span>{LANDMARK_ICON[l.type] ?? ''} {l.label}</span>}
@@ -84,9 +101,13 @@ export function FloorPlan({ data, floorId, filter, typeId, query, selectedId, on
             style={{ ...pos({ x: r.map_x, y: r.map_y, w: r.map_w, h: r.map_h }, floor), opacity: visible(r) ? 1 : 0.28 }} />
         ))}
       </div>
+      </div>
     </div>
   );
 }
+
+/** Khổ nhỏ nhất mà ô phòng hiển thị đủ chữ; khung hẹp hơn thì thu nhỏ đồng đều thay vì cuộn ngang. */
+const PLAN_MIN_W = 760;
 
 function pos(b: { x: number; y: number; w: number; h: number }, f: { map_width: number; map_height: number }): React.CSSProperties {
   return { left: `${(b.x / f.map_width) * 100}%`, top: `${(b.y / f.map_height) * 100}%`, width: `${(b.w / f.map_width) * 100}%`, height: `${(b.h / f.map_height) * 100}%` };
