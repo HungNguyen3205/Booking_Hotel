@@ -10,7 +10,6 @@ export function Footer({ site }: { site: SiteData | null }) {
   return (
     <footer className="site-footer">
       <div className="wrap">
-        <div className="footer-mark" aria-hidden>GLG</div>
         <div className="cols">
           <div className="stack">
             <Link href="/" className="logo"><span className="logo-mark" aria-hidden><img src="/images/glg/logo.webp" alt="" width={46} height={46} /></span>

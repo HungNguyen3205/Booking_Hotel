@@ -283,11 +283,8 @@
 .qr-box img { width: 200px; height: 200px; image-rendering: pixelated; }
 
 /* ---------- Footer: kết thúc câu chuyện trên cùng nền xanh ---------- */
-.site-footer { position: relative; background: var(--ink); color: #dfe8e2; padding-block: 8px 28px; overflow: hidden; }
+.site-footer { position: relative; background: var(--ink); color: #dfe8e2; padding-block: 64px 28px; overflow: hidden; }
 .site-footer::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 14px; background: var(--bamboo); opacity: .5; }
-main:not(:has(.chapter-visit:last-child)) + .site-footer { padding-top: 56px; }
-.footer-mark { font-family: var(--serif); font-weight: 500; font-size: clamp(110px, 22vw, 300px); line-height: .8; letter-spacing: .08em; color: transparent;
-  -webkit-text-stroke: 1px rgba(231, 211, 172, .22); margin: 28px 0 32px; user-select: none; }
 .site-footer .cols { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
 .site-footer h2 { color: #fff; font-family: var(--sans); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 14px; }
 .site-footer a { color: #dfe8e2; text-decoration: none; font-size: 14.5px; }
@@ -409,7 +406,7 @@ html:has(.site) { scroll-padding-top: calc(var(--header-h, 72px) + 16px); }
 /* Hiệu năng: chỉ dùng 4 kiểu font trên website (Be Vietnam 400/600, Cormorant 600 + 500 nghiêng) — giảm từ 14 xuống 8 tệp tải.
    Đo thực tế: font tranh băng thông với ảnh hero (LCP). */
 .site strong, .site b, .site th, .site .summary-card .total, .site .card-head h2, .site .card-head h3, .site .table th { font-weight: 600; }
-.site .plate-area, .site .pause-quote, .site .footer-mark { font-weight: 600; }
+.site .plate-area, .site .pause-quote { font-weight: 600; }
 .site h1, .site h2, .site h3 { font-weight: 600; }
 .site .chapter-no span, .site h1 em, .site h2 em { font-weight: 500; font-style: italic; }
 
