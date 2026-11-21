@@ -19,6 +19,7 @@ step() { printf '\n\033[1;32m==> %s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33m[!] %s\033[0m\n' "$*"; }
 fail() { printf '\n\033[1;31mLỖI: %s\033[0m\n' "$*" >&2; exit 1; }
 rand() { LC_ALL=C tr -dc "$2" </dev/urandom | head -c "$1" || true; }
+trap 'printf "\n\033[1;31mLỖI: lệnh ở dòng %s của install.sh thất bại (xem thông báo phía trên). Gửi đoạn này cho người hỗ trợ.\033[0m\n" "$LINENO" >&2' ERR
 
 [ -n "$DOMAIN" ] || fail "Thiếu tên miền. Cách dùng: bash $0 ten-mien.vn"
 [ "$ROOT" != "$APP_REL" ] || fail "Mã nguồn phải nằm trong thư mục home ($HOME)."
@@ -61,8 +62,11 @@ fi
 # ---------- Database + backend/.env ----------
 cd "$ROOT/backend"
 ADMIN_EMAIL=""; ADMIN_PASSWORD=""
+envval() { grep -m1 "^$1=" .env | cut -d= -f2- | sed 's/^"//; s/"$//'; }
 if [ -f .env ]; then
   step "backend/.env đã tồn tại — giữ nguyên (không tạo lại database/mật khẩu)"
+  ADMIN_EMAIL="$(envval HOTEL_ADMIN_EMAIL)"; ADMIN_PASSWORD="$(envval HOTEL_ADMIN_PASSWORD)"
+  DB_NAME="$(envval DB_DATABASE)"; DB_USER="$(envval DB_USERNAME)"; DB_PASS="$(envval DB_PASSWORD)"
 else
   step "Tạo database MySQL"
   PREFIX="$(uapi --output=json Mysql get_restrictions | json_get result.data.prefix 2>/dev/null || true)"
@@ -128,7 +132,8 @@ fi
 step "Backend: cài thư viện, khởi tạo dữ liệu"
 composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 mkdir -p storage/app/public storage/app/private storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
-"$PHP_BIN" artisan optimize:clear >/dev/null
+# Không dùng optimize:clear: nó xóa cache trong CSDL, lỗi khi bảng cache chưa được tạo
+"$PHP_BIN" artisan config:clear >/dev/null && "$PHP_BIN" artisan route:clear >/dev/null && "$PHP_BIN" artisan view:clear >/dev/null
 grep -q '^APP_KEY=base64:' .env || "$PHP_BIN" artisan key:generate --force
 "$PHP_BIN" artisan migrate --force
 "$PHP_BIN" artisan db:seed --force     # chạy lại an toàn: chỉ tạo những gì chưa có

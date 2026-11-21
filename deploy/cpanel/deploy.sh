@@ -18,6 +18,7 @@ export PATH="$(dirname "$(command -v "$PHP_BIN")"):$HOME/bin:$PATH"   # composer
 
 step() { printf '\n\033[1;32m==> %s\033[0m\n' "$*"; }
 fail() { printf '\n\033[1;31mLỖI: %s\033[0m\n' "$*" >&2; exit 1; }
+trap 'printf "\n\033[1;31mLỖI: lệnh ở dòng %s của deploy.sh thất bại (xem thông báo phía trên).\033[0m\n" "$LINENO" >&2' ERR
 
 cd "$ROOT"
 if [ "${1:-}" != "--no-pull" ]; then
@@ -41,7 +42,7 @@ step "Backend: cập nhật CSDL (migrate)"
 "$PHP_BIN" artisan migrate --force
 
 step "Backend: nạp cache cấu hình/route/view"
-"$PHP_BIN" artisan optimize:clear >/dev/null
+"$PHP_BIN" artisan config:clear >/dev/null && "$PHP_BIN" artisan route:clear >/dev/null && "$PHP_BIN" artisan view:clear >/dev/null
 "$PHP_BIN" artisan config:cache
 "$PHP_BIN" artisan route:cache
 "$PHP_BIN" artisan view:cache
