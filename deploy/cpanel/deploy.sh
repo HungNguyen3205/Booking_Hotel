@@ -52,8 +52,11 @@ cd "$ROOT/frontend"
 [ -f .env.production.local ] || fail "Chưa có frontend/.env.production.local — chép từ deploy/cpanel/frontend.env.example."
 
 if [ -n "$NODE_VENV" ]; then
+  # File activate của CloudLinux dùng biến chưa khai báo (CL_VIRTUAL_ENV...) nên tạm tắt set -u
+  set +u
   # shellcheck disable=SC1090
   . "${NODE_VENV/#\~/$HOME}"
+  set -u
 fi
 command -v node >/dev/null || fail "Không thấy node. Đặt NODE_VENV trỏ tới file activate của Node.js App (xem docs/trien-khai-cpanel.md)."
 NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
