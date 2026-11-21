@@ -65,8 +65,15 @@ NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
 step "Frontend: cài thư viện (npm install)"
 npm install --include=dev --no-audit --no-fund
 
+# Máy chủ glibc cũ (CentOS/CloudLinux 7) không nạp được sharp -> tắt tối ưu ảnh động, dùng ảnh WebP có sẵn
+if ! node -e "require('sharp')" >/dev/null 2>&1; then
+  printf '\033[1;33m[!] sharp không chạy trên máy chủ này — dùng ảnh WebP có sẵn, không tối ưu ảnh động.\033[0m\n'
+  grep -q '^NEXT_IMAGES_UNOPTIMIZED=' .env.production.local || printf '\nNEXT_IMAGES_UNOPTIMIZED=1\n' >> .env.production.local
+fi
+
 step "Frontend: build (có thể mất vài phút)"
-NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}" npm run build
+# --webpack: Turbopack cần SWC bản native (glibc >= 2.29); Webpack chạy được với SWC WebAssembly trên máy chủ cũ
+NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}" npm run build -- --webpack
 
 step "Frontend: khởi động lại ứng dụng Node"
 mkdir -p tmp && touch tmp/restart.txt

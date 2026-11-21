@@ -13,7 +13,8 @@ const config: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || '.next',
   poweredByHeader: false,
   // AVIF trước, WebP dự phòng: cùng chất lượng hiển thị, ít byte hơn (đo LCP: ảnh hero bị nghẽn băng thông)
-  images: { formats: ['image/avif', 'image/webp'] },
+  // NEXT_IMAGES_UNOPTIMIZED=1: máy chủ không chạy được sharp (glibc cũ) -> phục vụ thẳng ảnh WebP đã nén sẵn
+  images: process.env.NEXT_IMAGES_UNOPTIMIZED === '1' ? { unoptimized: true } : { formats: ['image/avif', 'image/webp'] },
   async rewrites() {
     const backend = (process.env.HOTEL_API_URL || 'http://127.0.0.1:8000').replace(/\/+$/, '');
     return [{ source: '/api/:path*', destination: `${backend}/api/:path*` }];
